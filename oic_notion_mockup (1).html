@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OIC System Map — Notion Style</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #FFFFFF;
+  --sidebar-bg: #F7F7F5;
+  --hover: #EFEFED;
+  --border: #E9E9E7;
+  --text: #37352F;
+  --muted: #9B9A97;
+  --muted2: #6B6B6B;
+  --c1: #D44C47;
+  --c1-bg: #FDECEA;
+  --c2: #337EA9;
+  --c2-bg: #E7F3F8;
+  --c3: #0F7B6C;
+  --c3-bg: #EEF8F6;
+  --tag-border: #E2E2E0;
+  --font: 'Inter', sans-serif;
+}
+
+body { font-family:var(--font); background:var(--bg); color:var(--text); display:flex; height:100vh; overflow:hidden; font-size:14px; }
+
+/* ─── SIDEBAR ─── */
+#sidebar {
+  width:240px; flex-shrink:0;
+  background:var(--sidebar-bg);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  padding:8px 0;
+  overflow-y:auto;
+}
+
+.sb-header {
+  padding:10px 14px 8px;
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; font-weight:600;
+  color:var(--text);
+  border-bottom:1px solid var(--border);
+  margin-bottom:4px;
+}
+.sb-workspace-icon { width:22px; height:22px; border-radius:4px; background:#E8E4DC; display:flex; align-items:center; justify-content:center; font-size:13px; }
+
+.sb-section { padding:4px 8px; }
+.sb-section-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; padding:6px 6px 4px; }
+
+.sb-item {
+  display:flex; align-items:center; gap:6px;
+  padding:4px 6px; border-radius:4px;
+  cursor:pointer; font-size:13px; color:var(--muted2);
+  transition:background 0.1s;
+}
+.sb-item:hover { background:var(--hover); color:var(--text); }
+.sb-item.active { background:var(--hover); color:var(--text); font-weight:500; }
+.sb-item .icon { font-size:15px; width:20px; text-align:center; flex-shrink:0; }
+.sb-item .label { flex:1; }
+.sb-item .count { font-size:11px; color:var(--muted); background:var(--border); padding:1px 6px; border-radius:10px; }
+
+.sb-sub { padding-left:20px; }
+.sb-sub .sb-item { font-size:12.5px; }
+
+/* ─── MAIN ─── */
+#main {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  padding:0;
+}
+
+/* ─── PAGE HEADER ─── */
+.page-header {
+  padding:48px 96px 24px;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:white; z-index:10;
+}
+
+.page-icon { font-size:48px; margin-bottom:12px; display:block; }
+.page-title { font-size:32px; font-weight:700; color:var(--text); line-height:1.2; margin-bottom:6px; }
+.page-subtitle { font-size:14px; color:var(--muted); }
+
+.page-props {
+  margin-top:20px;
+  display:flex; flex-wrap:wrap; gap:24px;
+}
+.prop-row { display:flex; align-items:center; gap:12px; }
+.prop-label { font-size:12px; color:var(--muted); width:100px; }
+.prop-val { font-size:13px; color:var(--text); display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+
+.tag {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:4px;
+  font-size:12px; font-weight:500;
+  background:var(--hover); color:var(--muted2);
+  border:1px solid var(--tag-border);
+}
+
+/* ─── CONTENT ─── */
+.page-content { padding:32px 96px 80px; max-width:900px; }
+
+/* CALLOUT */
+.callout {
+  display:flex; gap:12px; align-items:flex-start;
+  padding:14px 16px; border-radius:6px;
+  margin-bottom:28px;
+  background:#F7F6F3;
+  border:1px solid var(--border);
+}
+.callout-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.callout-text { font-size:13.5px; color:var(--muted2); line-height:1.6; }
+
+/* CHALLENGE SECTION */
+.challenge-block { margin-bottom:36px; }
+
+.challenge-header {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px;
+  border-radius:8px 8px 0 0;
+  border:1px solid var(--border);
+  border-bottom:none;
+  cursor:pointer;
+  user-select:none;
+  transition:background 0.1s;
+}
+.challenge-header:hover { filter:brightness(0.97); }
+
+.ch-icon { font-size:18px; }
+.ch-name { font-size:15px; font-weight:700; flex:1; }
+.ch-stats { display:flex; gap:8px; }
+.ch-stat-tag { font-size:11px; padding:2px 8px; border-radius:20px; font-weight:500; opacity:0.85; }
+.ch-toggle { font-size:12px; color:var(--muted); transition:transform 0.2s; }
+.ch-toggle.open { transform:rotate(90deg); }
+
+.challenge-body {
+  border:1px solid var(--border);
+  border-radius:0 0 8px 8px;
+  overflow:hidden;
+}
+
+/* DIMENSION ROW */
+.dim-row {
+  border-bottom:1px solid var(--border);
+}
+.dim-row:last-child { border-bottom:none; }
+
+.dim-header {
+  display:flex; align-items:center; gap:8px;
+  padding:9px 14px 9px 24px;
+  background:#FAFAFA;
+  cursor:pointer;
+  user-select:none;
+  transition:background 0.1s;
+}
+.dim-header:hover { background:var(--hover); }
+.dim-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.dim-name { font-size:13px; font-weight:600; flex:1; color:var(--text); }
+.dim-toggle { font-size:11px; color:var(--muted); transition:transform 0.2s; }
+.dim-toggle.open { transform:rotate(90deg); }
+.dim-count { font-size:11px; color:var(--muted); }
+
+/* PROBLEM AREA */
+.pa-section { padding:0 14px 0 40px; background:white; }
+
+.pa-row {
+  border-bottom:1px solid var(--border);
+  padding:8px 0;
+}
+.pa-row:last-child { border-bottom:none; }
+
+.pa-header {
+  display:flex; align-items:center; gap:8px;
+  cursor:pointer; padding:4px 0;
+  user-select:none;
+}
+.pa-header:hover .pa-name { color:var(--text); }
+.pa-bar { width:3px; height:14px; border-radius:2px; flex-shrink:0; }
+.pa-name { font-size:12.5px; font-weight:600; color:var(--muted2); flex:1; transition:color 0.1s; }
+.pa-toggle { font-size:10px; color:var(--muted); transition:transform 0.2s; }
+.pa-toggle.open { transform:rotate(90deg); }
+.pa-issue-count { font-size:11px; color:var(--muted); }
+
+/* ISSUE TABLE */
+.issue-table {
+  margin:4px 0 8px 11px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  display:none;
+}
+.issue-table.open { display:block; }
+
+.issue-table-header {
+  display:grid;
+  grid-template-columns: 2fr 1.2fr 2.5fr 2fr;
+  background:#F7F7F5;
+  border-bottom:1px solid var(--border);
+}
+.th { padding:7px 12px; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+
+.issue-row {
+  display:grid;
+  grid-template-columns: 2fr 1.2fr 2.5fr 2fr;
+  border-bottom:1px solid var(--border);
+  transition:background 0.1s;
+  cursor:pointer;
+}
+.issue-row:last-child { border-bottom:none; }
+.issue-row:hover { background:#FAFAFA; }
+
+.td { padding:9px 12px; font-size:12.5px; color:var(--text); line-height:1.45; }
+.td.title { font-weight:500; }
+.td.muted { color:var(--muted2); font-size:12px; }
+.td.evidence { color:var(--muted); font-size:11.5px; font-style:italic; }
+
+.type-badge {
+  display:inline-block;
+  padding:2px 7px; border-radius:4px;
+  font-size:11px; font-weight:500;
+  white-space:nowrap;
+}
+
+/* EXPANDED ISSUE DETAIL */
+.issue-detail {
+  display:none;
+  grid-column:1/-1;
+  padding:12px 16px 14px;
+  background:#FAFAFA;
+  border-top:1px solid var(--border);
+}
+.issue-detail.open { display:block; }
+.det-field { margin-bottom:10px; }
+.det-field:last-child { margin-bottom:0; }
+.det-field-label { font-size:10.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:3px; }
+.det-field-val { font-size:12.5px; color:var(--muted2); line-height:1.6; }
+
+/* ─── SEARCH BAR ─── */
+.search-bar {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 14px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  margin-bottom:24px;
+  background:#FAFAFA;
+}
+.search-bar input {
+  border:none; background:transparent; font-family:var(--font); font-size:13px;
+  color:var(--text); outline:none; flex:1;
+}
+.search-bar input::placeholder { color:var(--muted); }
+
+/* FILTER ROW */
+.filter-row {
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:20px; flex-wrap:wrap;
+}
+.filter-label { font-size:12px; color:var(--muted); }
+.filter-btn {
+  padding:4px 12px; border-radius:4px; font-size:12px; font-weight:500;
+  border:1px solid var(--border); background:white; cursor:pointer;
+  color:var(--muted2); transition:all 0.1s; font-family:var(--font);
+}
+.filter-btn:hover, .filter-btn.active { background:var(--hover); color:var(--text); border-color:#C7C7C5; }
+.filter-btn.f-c1.active { background:var(--c1-bg); color:var(--c1); border-color:#F5C0BE; }
+.filter-btn.f-c2.active { background:var(--c2-bg); color:var(--c2); border-color:#B8D9EC; }
+.filter-btn.f-c3.active { background:var(--c3-bg); color:var(--c3); border-color:#B3DDD8; }
+
+/* DIVIDER */
+.divider { height:1px; background:var(--border); margin:28px 0; }
+
+/* SCROLLBAR */
+#main::-webkit-scrollbar { width:6px; }
+#main::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-header">
+    <div class="sb-workspace-icon">🏙</div>
+    OIC Workspace
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Navigation</div>
+    <div class="sb-item active">
+      <span class="icon">🗺</span>
+      <span class="label">System Map</span>
+    </div>
+    <div class="sb-item">
+      <span class="icon">📋</span>
+      <span class="label">All Issues</span>
+      <span class="count">56</span>
+    </div>
+    <div class="sb-item">
+      <span class="icon">🔗</span>
+      <span class="label">Cross-Connections</span>
+      <span class="count">10</span>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Challenges</div>
+    <div class="sb-item">
+      <span class="icon">🟠</span>
+      <span class="label">Clean & Safe Spaces</span>
+    </div>
+    <div class="sb-sub">
+      <div class="sb-item"><span class="icon">·</span><span class="label">Clean Spaces</span></div>
+      <div class="sb-item"><span class="icon">·</span><span class="label">Beautiful Spaces</span></div>
+      <div class="sb-item"><span class="icon">·</span><span class="label">Welcoming Spaces</span></div>
+      <div class="sb-item"><span class="icon">·</span><span class="label">Safe Spaces</span></div>
+    </div>
+    <div class="sb-item">
+      <span class="icon">🔵</span>
+      <span class="label">Health & Homelessness</span>
+    </div>
+    <div class="sb-sub">
+      <div class="sb-item"><span class="icon">·</span><span class="label">Breaking the Cycle</span></div>
+      <div class="sb-item"><span class="icon">·</span><span class="label">Health Disparities</span></div>
+    </div>
+    <div class="sb-item">
+      <span class="icon">🟢</span>
+      <span class="label">Keep City Safe</span>
+    </div>
+    <div class="sb-sub">
+      <div class="sb-item"><span class="icon">·</span><span class="label">Drug Markets</span></div>
+      <div class="sb-item"><span class="icon">·</span><span class="label">Retail Theft</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+  <div class="page-header">
+    <span class="page-icon">🗺</span>
+    <div class="page-title">OIC — SF System Map</div>
+    <div class="page-subtitle">Mapping challenges, dimensions, and cross-connections across San Francisco's 3 innovation challenges</div>
+    <div class="page-props">
+      <div class="prop-row">
+        <span class="prop-label">Challenges</span>
+        <span class="prop-val">
+          <span class="tag" style="background:#FDECEA;color:#D44C47;border-color:#F5C0BE">🟠 Clean & Safe</span>
+          <span class="tag" style="background:#E7F3F8;color:#337EA9;border-color:#B8D9EC">🔵 Health</span>
+          <span class="tag" style="background:#EEF8F6;color:#0F7B6C;border-color:#B3DDD8">🟢 Safe City</span>
+        </span>
+      </div>
+      <div class="prop-row">
+        <span class="prop-label">Total issues</span>
+        <span class="prop-val" style="font-weight:600">56 specific issues</span>
+      </div>
+      <div class="prop-row">
+        <span class="prop-label">Last updated</span>
+        <span class="prop-val" style="color:var(--muted)">March 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="callout">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">Each challenge is broken into <strong>Dimensions → Problem Areas → Specific Issues</strong>. Click any row to expand and read the full description, evidence, and why it matters. Use the filters to focus on one challenge at a time.</div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filter-row">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="filterAll(this)">All challenges</button>
+      <button class="filter-btn f-c1" onclick="filterChallenge('c1', this)">🟠 Clean & Safe Spaces</button>
+      <button class="filter-btn f-c2" onclick="filterChallenge('c2', this)">🔵 Health & Homelessness</button>
+      <button class="filter-btn f-c3" onclick="filterChallenge('c3', this)">🟢 Keep City Safe</button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-bar">
+      <span style="font-size:14px;color:var(--muted)">🔍</span>
+      <input type="text" placeholder="Search issues, problem areas, evidence…" oninput="searchIssues(this.value)">
+    </div>
+
+    <!-- ══════ CHALLENGE 1 ══════ -->
+    <div class="challenge-block" data-ch="c1">
+      <div class="challenge-header" style="background:#FEF4F2;" onclick="toggleChallenge('ch1')">
+        <span class="ch-icon">🟠</span>
+        <span class="ch-name" style="color:#D44C47">Maintain Clean, Safe & Welcoming Spaces</span>
+        <div class="ch-stats">
+          <span class="ch-stat-tag" style="background:#FDECEA;color:#D44C47">4 dimensions</span>
+          <span class="ch-stat-tag" style="background:#FDECEA;color:#D44C47">39 issues</span>
+        </div>
+        <span class="ch-toggle open" id="ch1-toggle">▶</span>
+      </div>
+      <div class="challenge-body" id="ch1">
+
+        <!-- DIM 1 -->
+        <div class="dim-row">
+          <div class="dim-header" onclick="toggleDim('dim1')">
+            <span class="dim-dot" style="background:#D44C47"></span>
+            <span class="dim-name">Clean Spaces</span>
+            <span class="dim-count">4 problem areas · 11 issues</span>
+            <span class="dim-toggle open" id="dim1-toggle">▶</span>
+          </div>
+          <div class="pa-section" id="dim1">
+
+            <!-- PA 1 -->
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa1')">
+                <span class="pa-bar" style="background:#D44C47"></span>
+                <span class="pa-name">Garbage Infrastructure</span>
+                <span class="pa-issue-count">3 issues</span>
+                <span class="pa-toggle open" id="pa1-toggle">▶</span>
+              </div>
+              <div class="issue-table open" id="pa1">
+                <div class="issue-table-header">
+                  <div class="th">Issue</div>
+                  <div class="th">Type</div>
+                  <div class="th">Description</div>
+                  <div class="th">Why it's a problem</div>
+                </div>
+                <div class="issue-row" onclick="toggleIssueDetail('id1')">
+                  <div class="td title">Lack of garbage bins</div>
+                  <div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div>
+                  <div class="td muted">300–400 bins removed. "Bin-deserts" in 2-block stretches with nowhere to dispose trash.</div>
+                  <div class="td muted">People throw trash on the street, creating dirty, unwelcoming public spaces.</div>
+                </div>
+                <div class="issue-detail" id="id1">
+                  <div class="det-field"><div class="det-field-label">Evidence</div><div class="det-field-val">"In recent months, the Dept. of Public Works removed more than 6% — 300 to 400 — of the City's approximately 5,000 trash cans."</div></div>
+                </div>
+                <div class="issue-row" onclick="toggleIssueDetail('id2')">
+                  <div class="td title">Homeless people rummaging through trash</div>
+                  <div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div>
+                  <div class="td muted">Homeless individuals search trash for food/items, leaving waste on the floor.</div>
+                  <div class="td muted">Trash left on street and sidewalks, contributing to dirty public spaces.</div>
+                </div>
+                <div class="issue-detail" id="id2"></div>
+                <div class="issue-row" onclick="toggleIssueDetail('id3')">
+                  <div class="td title">Insufficient bin emptying frequency</div>
+                  <div class="td"><span class="type-badge" style="background:#FFF3CD;color:#856404">Municipal Process</span></div>
+                  <div class="td muted">Insufficient frequency of emptying bins in some areas leads to overflow.</div>
+                  <div class="td muted">Overflow → people pile trash around bins → 311 complaints → bins removed → worse problem.</div>
+                </div>
+                <div class="issue-detail" id="id3"></div>
+              </div>
+            </div>
+
+            <!-- PA 2 -->
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa2')">
+                <span class="pa-bar" style="background:#D44C47"></span>
+                <span class="pa-name">Operational Inefficiency</span>
+                <span class="pa-issue-count">4 issues</span>
+                <span class="pa-toggle" id="pa2-toggle">▶</span>
+              </div>
+              <div class="issue-table" id="pa2">
+                <div class="issue-table-header">
+                  <div class="th">Issue</div>
+                  <div class="th">Type</div>
+                  <div class="th">Description</div>
+                  <div class="th">Evidence</div>
+                </div>
+                <div class="issue-row" onclick="toggleIssueDetail('id4')">
+                  <div class="td title">High budget, poor results</div>
+                  <div class="td"><span class="type-badge" style="background:#FFF3CD;color:#856404">Municipal Process</span></div>
+                  <div class="td muted">SF spends $59/capita vs $19 in LA — 3× more per person — with worse outcomes.</div>
+                  <div class="td evidence">$59.08 per capita vs $19.54 in LA; $1M/sq mile vs $159K in LA.</div>
+                </div>
+                <div class="issue-detail" id="id4">
+                  <div class="det-field"><div class="det-field-label">Why it's a problem</div><div class="det-field-val">Indicates systemic inefficiency and poor ROI on public spending.</div></div>
+                  <div class="det-field"><div class="det-field-label">Intervention type</div><div class="det-field-val">Operational redesign; performance benchmarking; resource optimization</div></div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">$15.2M unspent / diverted in FY23–24</div>
+                  <div class="td"><span class="type-badge" style="background:#FFF3CD;color:#856404">Municipal Process</span></div>
+                  <div class="td muted">Street cleaning funds left unused or redirected to events/admin needs.</div>
+                  <div class="td evidence">Average annual underspend of 11%. $11M diverted. 63% budget increase since 2018 without improvement.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">No effectiveness metrics (routes, frequency)</div>
+                  <div class="td"><span class="type-badge" style="background:#FFF3CD;color:#856404">Municipal Process</span></div>
+                  <div class="td muted">Routes rely on outdated plans; metrics focus on outputs, not cleanliness outcomes.</div>
+                  <div class="td evidence">~800,000 complaints in 2025. Trash was top complaint category (~100,000).</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">$3M in fines uncollected</div>
+                  <div class="td"><span class="type-badge" style="background:#FFF3CD;color:#856404">Municipal Process</span></div>
+                  <div class="td muted">Weak enforcement against dumping; failure to collect fines.</div>
+                  <div class="td evidence">"SF suffers from a 'weak' enforcement culture." Illegal dumping citations declining.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PA 3 -->
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa3')">
+                <span class="pa-bar" style="background:#D44C47"></span>
+                <span class="pa-name">Homelessness & Encampments</span>
+                <span class="pa-issue-count">3 issues</span>
+                <span class="pa-toggle" id="pa3-toggle">▶</span>
+              </div>
+              <div class="issue-table" id="pa3">
+                <div class="issue-table-header">
+                  <div class="th">Issue</div><div class="th">Type</div><div class="th">Description</div><div class="th">Evidence</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Encampment-related waste</div>
+                  <div class="td"><span class="type-badge" style="background:#FEF0E7;color:#C97A2A">Resident Behaviour</span></div>
+                  <div class="td muted">Encampments generate trash, debris, and human waste in public spaces.</div>
+                  <div class="td evidence">~$9M/year (15% of total cleaning budget). 8,300 homeless individuals.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Insufficient public restrooms</div>
+                  <div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div>
+                  <div class="td muted">No restrooms open at night — forcing open air urination and defecation.</div>
+                  <div class="td evidence">Increases pathogen exposure and biohazard cleaning costs.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">89% streets with graffiti (FY2024–25)</div>
+                  <div class="td"><span class="type-badge" style="background:#FEF0E7;color:#C97A2A">Resident Behaviour</span></div>
+                  <div class="td muted">89% of city streets had graffiti — up from 82% in early 2022.</div>
+                  <div class="td evidence">Worst in Bayview, Mission District, Tenderloin, Bernal Heights.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- end dim1 -->
+
+        <!-- DIM 2 placeholder -->
+        <div class="dim-row">
+          <div class="dim-header" onclick="toggleDim('dim2')">
+            <span class="dim-dot" style="background:#E57354"></span>
+            <span class="dim-name">Welcoming & Accessible Spaces (Family)</span>
+            <span class="dim-count">5 problem areas · 18 issues</span>
+            <span class="dim-toggle" id="dim2-toggle">▶</span>
+          </div>
+          <div class="pa-section" id="dim2" style="display:none">
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa4')">
+                <span class="pa-bar" style="background:#E57354"></span>
+                <span class="pa-name">Physical Infrastructure & Design</span>
+                <span class="pa-issue-count">5 issues</span>
+                <span class="pa-toggle" id="pa4-toggle">▶</span>
+              </div>
+              <div class="issue-table" id="pa4">
+                <div class="issue-table-header"><div class="th">Issue</div><div class="th">Type</div><div class="th">Description</div><div class="th">Evidence</div></div>
+                <div class="issue-row"><div class="td title">Insufficient public restrooms in parks</div><div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div><div class="td muted">—</div><div class="td evidence">—</div></div>
+                <div class="issue-row"><div class="td title">Lack of shade, seating, fountains</div><div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div><div class="td muted">Basic urban furniture absent</div><div class="td evidence">—</div></div>
+                <div class="issue-row"><div class="td title">Missing wheelchair ramps and accessible sidewalks</div><div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div><div class="td muted">Inaccessible for mobility devices</div><div class="td evidence">—</div></div>
+                <div class="issue-row"><div class="td title">POPOS concentrated downtown, not neighborhoods</div><div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div><div class="td muted">Not accessible in residential neighborhoods</div><div class="td evidence">—</div></div>
+                <div class="issue-row"><div class="td title">Inadequate stroller and mobility device access</div><div class="td"><span class="type-badge" style="background:#E8F4FD;color:#337EA9">Tech & Infrastructure</span></div><div class="td muted">—</div><div class="td evidence">—</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end challenge 1 -->
+
+    <div class="divider"></div>
+
+    <!-- ══════ CHALLENGE 2 ══════ -->
+    <div class="challenge-block" data-ch="c2">
+      <div class="challenge-header" style="background:#EDF4FB;" onclick="toggleChallenge('ch2')">
+        <span class="ch-icon">🔵</span>
+        <span class="ch-name" style="color:#337EA9">Transform Our Health and Homelessness System</span>
+        <div class="ch-stats">
+          <span class="ch-stat-tag" style="background:#E7F3F8;color:#337EA9">2 dimensions</span>
+          <span class="ch-stat-tag" style="background:#E7F3F8;color:#337EA9">19 issues</span>
+        </div>
+        <span class="ch-toggle open" id="ch2-toggle">▶</span>
+      </div>
+      <div class="challenge-body" id="ch2">
+        <div class="dim-row">
+          <div class="dim-header" onclick="toggleDim('dim3')">
+            <span class="dim-dot" style="background:#337EA9"></span>
+            <span class="dim-name">Breaking the Cycle (Homelessness)</span>
+            <span class="dim-count">3 problem areas · 6 issues</span>
+            <span class="dim-toggle open" id="dim3-toggle">▶</span>
+          </div>
+          <div class="pa-section" id="dim3">
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa5')">
+                <span class="pa-bar" style="background:#337EA9"></span>
+                <span class="pa-name">Structural / Systemic Issues</span>
+                <span class="pa-issue-count">3 issues</span>
+                <span class="pa-toggle open" id="pa5-toggle">▶</span>
+              </div>
+              <div class="issue-table open" id="pa5">
+                <div class="issue-table-header"><div class="th">Issue</div><div class="th">Type</div><div class="th">Description</div><div class="th">Evidence</div></div>
+                <div class="issue-row" onclick="toggleIssueDetail('id5')">
+                  <div class="td title">Housing Unaffordability and Supply Shortage</div>
+                  <div class="td"><span class="type-badge" style="background:#F3EEF8;color:#6E4DA4">Regulation & Policy</span></div>
+                  <div class="td muted">SF has one of the world's most expensive housing markets. Affordable supply far short of demand.</div>
+                  <div class="td evidence">Median rent $3,148/mo — 55% above US avg. Median homeless income before losing housing: $960/mo.</div>
+                </div>
+                <div class="issue-detail" id="id5">
+                  <div class="det-field"><div class="det-field-label">Why it's a problem</div><div class="det-field-val">When housing costs vastly exceed incomes, any life disruption — job loss, medical emergency, relationship breakdown — can push people into homelessness. Without affordable alternatives, displaced residents have nowhere to go.</div></div>
+                  <div class="det-field"><div class="det-field-label">Evidence</div><div class="det-field-val">Median home price ~$1.29M (2025). Permitting averaged 450+ calendar days — longest of any large US city. 59% of homeless last lived in SF — meaning they were locals, not migrants.</div></div>
+                </div>
+                <div class="issue-row" onclick="toggleIssueDetail('id6')">
+                  <div class="td title">Racial Inequality and Systemic Disparities</div>
+                  <div class="td"><span class="type-badge" style="background:#F3EEF8;color:#6E4DA4">Regulation & Policy</span></div>
+                  <div class="td muted">Homelessness is deeply racialized. Black, Hispanic/Latine, and TGNC individuals dramatically overrepresented.</div>
+                  <div class="td evidence">Black = ~5% population but 25–37% of homeless. Hispanic/Latine = 15% pop, 34% homeless.</div>
+                </div>
+                <div class="issue-detail" id="id6">
+                  <div class="det-field"><div class="det-field-label">Why it's a problem</div><div class="det-field-val">Communities historically excluded from homeownership face far greater vulnerability. Without addressing racial equity, homelessness interventions will continue to fail the most marginalized groups.</div></div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Poverty, Income Inequality, and Cost of Living</div>
+                  <div class="td"><span class="type-badge" style="background:#F3EEF8;color:#6E4DA4">Regulation & Policy</span></div>
+                  <div class="td muted">Tech-sector wealth coexists with deep poverty. Housing market structurally inaccessible to low-income residents.</div>
+                  <div class="td evidence">Housing costs in SF are 242% higher than the U.S. average. Homeless income $960/mo vs $3,148 avg rent.</div>
+                </div>
+              </div>
+            </div>
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa6')">
+                <span class="pa-bar" style="background:#337EA9"></span>
+                <span class="pa-name">Behavioral / Health System</span>
+                <span class="pa-issue-count">2 issues</span>
+                <span class="pa-toggle" id="pa6-toggle">▶</span>
+              </div>
+              <div class="issue-table" id="pa6">
+                <div class="issue-table-header"><div class="th">Issue</div><div class="th">Type</div><div class="th">Description</div><div class="th">Evidence</div></div>
+                <div class="issue-row">
+                  <div class="td title">Substance Use and the Fentanyl/Drug Crisis</div>
+                  <div class="td"><span class="type-badge" style="background:#FEF0E7;color:#C97A2A">Resident Behaviour</span></div>
+                  <div class="td muted">Severe intersection of homelessness and drug addiction. 42% began drug use AFTER becoming homeless.</div>
+                  <div class="td evidence">806 overdose deaths in 2023. Only 46 city-run treatment spaces available. 28% wanted treatment but couldn't access it.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Mental Health Crisis & Inadequate Behavioral Health System</div>
+                  <div class="td"><span class="type-badge" style="background:#FEF0E7;color:#C97A2A">Resident Behaviour</span></div>
+                  <div class="td muted">51% of SF homeless report psychiatric conditions (+15% since 2022). System lacks capacity to meet demand.</div>
+                  <div class="td evidence">City needs 152–225 new psychiatric beds. Conservatorship law (2019) helped only 4 people in 4 years.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ══════ CHALLENGE 3 ══════ -->
+    <div class="challenge-block" data-ch="c3">
+      <div class="challenge-header" style="background:#EDF8F5;" onclick="toggleChallenge('ch3')">
+        <span class="ch-icon">🟢</span>
+        <span class="ch-name" style="color:#0F7B6C">Keep Our City Safe</span>
+        <div class="ch-stats">
+          <span class="ch-stat-tag" style="background:#EEF8F6;color:#0F7B6C">2 dimensions</span>
+          <span class="ch-stat-tag" style="background:#EEF8F6;color:#0F7B6C">17 issues</span>
+        </div>
+        <span class="ch-toggle open" id="ch3-toggle">▶</span>
+      </div>
+      <div class="challenge-body" id="ch3">
+        <div class="dim-row">
+          <div class="dim-header" onclick="toggleDim('dim4')">
+            <span class="dim-dot" style="background:#0F7B6C"></span>
+            <span class="dim-name">Open-Air Drug Markets & Public Drug Use</span>
+            <span class="dim-count">4 problem areas · 9 issues</span>
+            <span class="dim-toggle open" id="dim4-toggle">▶</span>
+          </div>
+          <div class="pa-section" id="dim4">
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa7')">
+                <span class="pa-bar" style="background:#0F7B6C"></span>
+                <span class="pa-name">Public Drug Use & Addiction Crisis</span>
+                <span class="pa-issue-count">3 issues</span>
+                <span class="pa-toggle open" id="pa7-toggle">▶</span>
+              </div>
+              <div class="issue-table open" id="pa7">
+                <div class="issue-table-header"><div class="th">Issue</div><div class="th">Type</div><div class="th">Description</div><div class="th">Evidence</div></div>
+                <div class="issue-row" onclick="toggleIssueDetail('id7')">
+                  <div class="td title">Fentanyl Overdose Epidemic</div>
+                  <div class="td"><span class="type-badge" style="background:#FEF0E7;color:#C97A2A">Resident Behaviour</span></div>
+                  <div class="td muted">Fentanyl ~50× more potent than heroin. Flooded drug supply since ~2019. Overdose likely even for experienced users.</div>
+                  <div class="td evidence">811 deaths in 2023 (record). 635 in 2024 (−20%). >80% involved fentanyl. Avg 2+ deaths/day at peak.</div>
+                </div>
+                <div class="issue-detail" id="id7">
+                  <div class="det-field"><div class="det-field-label">Why it's a problem</div><div class="det-field-val">Fentanyl's extreme potency means a microscopic dosing error is fatal. Deaths cluster in open-use areas like the Tenderloin, traumatizing residents, overwhelming EMS, and occurring in public view — including near schools, libraries, and transit stations.</div></div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Insufficient Addiction Treatment Capacity</div>
+                  <div class="td"><span class="type-badge" style="background:#FFF3CD;color:#856404">Municipal Process</span></div>
+                  <div class="td muted">People with severe SUD far exceed available treatment resources. Many who want help can't access it.</div>
+                  <div class="td evidence">Only 46 city-run treatment spaces at peak crisis. 28% of homeless drug users wanted treatment but couldn't access it.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Drug-Related Violence & Assault</div>
+                  <div class="td"><span class="type-badge" style="background:#FEF0E7;color:#C97A2A">Resident Behaviour</span></div>
+                  <div class="td muted">Drug markets associated with firearms, turf conflicts, armed robbery, dealer-on-dealer violence.</div>
+                  <div class="td evidence">Gun violence in Tenderloin +77%. 1,013 drug offense incidents in 12-month period ending Aug 2023.</div>
+                </div>
+              </div>
+            </div>
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa8')">
+                <span class="pa-bar" style="background:#0F7B6C"></span>
+                <span class="pa-name">Enforcement & Response Systems</span>
+                <span class="pa-issue-count">3 issues</span>
+                <span class="pa-toggle" id="pa8-toggle">▶</span>
+              </div>
+              <div class="issue-table" id="pa8">
+                <div class="issue-table-header"><div class="th">Issue</div><div class="th">Type</div><div class="th">Description</div><div class="th">Evidence</div></div>
+                <div class="issue-row">
+                  <div class="td title">SFPD Officer Shortage (~500 below optimal)</div>
+                  <div class="td"><span class="type-badge" style="background:#F3EEF8;color:#6E4DA4">Regulation & Policy</span></div>
+                  <div class="td muted">SFPD significantly understaffed. Cannot sustain 24/7 enforcement on drug markets.</div>
+                  <div class="td evidence">9-min avg 911 response (near record). Tenderloin: 4 beat officers in 2024 vs 30 five years prior.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Drug Market Displacement</div>
+                  <div class="td"><span class="type-badge" style="background:#F3EEF8;color:#6E4DA4">Regulation & Policy</span></div>
+                  <div class="td muted">Enforcement in Tenderloin pushes markets to Mission, SoMa, Civic Center — not elimination.</div>
+                  <div class="td evidence">Drug offense rate rose 54% citywide despite concentrated Tenderloin enforcement. +121% vs 2019.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Nighttime Enforcement Gap</div>
+                  <div class="td"><span class="type-badge" style="background:#F3EEF8;color:#6E4DA4">Regulation & Policy</span></div>
+                  <div class="td muted">DMACC operations peaked daytime. Enforcement near-absent after midnight.</div>
+                  <div class="td evidence">Arrests plummeted after midnight. Enforcement peaked 1–2 p.m.; near-zero by 4 a.m.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dim-row">
+          <div class="dim-header" onclick="toggleDim('dim5')">
+            <span class="dim-dot" style="background:#43A58E"></span>
+            <span class="dim-name">Retail Theft & Fencing of Stolen Goods</span>
+            <span class="dim-count">3 problem areas · 8 issues</span>
+            <span class="dim-toggle" id="dim5-toggle">▶</span>
+          </div>
+          <div class="pa-section" id="dim5" style="display:none">
+            <div class="pa-row">
+              <div class="pa-header" onclick="togglePA('pa9')">
+                <span class="pa-bar" style="background:#43A58E"></span>
+                <span class="pa-name">Economic & Community Impact</span>
+                <span class="pa-issue-count">3 issues</span>
+                <span class="pa-toggle" id="pa9-toggle">▶</span>
+              </div>
+              <div class="issue-table" id="pa9">
+                <div class="issue-table-header"><div class="th">Issue</div><div class="th">Type</div><div class="th">Description</div><div class="th">Evidence</div></div>
+                <div class="issue-row">
+                  <div class="td title">Retail Business Exodus & Downtown Vacancy</div>
+                  <div class="td"><span class="type-badge" style="background:#F0F7EE;color:#3B7D3A">Urban Landscape</span></div>
+                  <div class="td muted">Chain store closures left Union Square with record-high 20.6% vacancy in Q1 2024.</div>
+                  <div class="td evidence">207 Union Square stores (2019) → 107 by 2023 — 48% reduction. National vacancy rate: 4%.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Worker Safety & Security Cost Escalation</div>
+                  <div class="td"><span class="type-badge" style="background:#FEF0E7;color:#C97A2A">Resident Behaviour</span></div>
+                  <div class="td muted">Retail workers face escalating risks of confrontation and intimidation from organized theft teams.</div>
+                  <div class="td evidence">Walgreens: security costs 35× national avg; theft rate 4× national avg. 73% of retailers report more aggressive shoplifters.</div>
+                </div>
+                <div class="issue-row">
+                  <div class="td title">Perception Damage & Tourism Deterrence</div>
+                  <div class="td"><span class="type-badge" style="background:#F0F7EE;color:#3B7D3A">Urban Landscape</span></div>
+                  <div class="td muted">Viral theft videos created lasting reputational damage deterring shoppers and tourists.</div>
+                  <div class="td evidence">Union Square foot traffic down 45% from pre-pandemic. SF had slowest downtown COVID recovery of any major US city.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end page-content -->
+</div><!-- end main -->
+
+<script>
+function toggleChallenge(id) {
+  const body = document.getElementById(id);
+  const toggle = document.getElementById(id+'-toggle');
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  toggle.classList.toggle('open', !open);
+}
+
+function toggleDim(id) {
+  const body = document.getElementById(id);
+  const toggle = document.getElementById(id+'-toggle');
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  toggle.classList.toggle('open', !open);
+}
+
+function togglePA(id) {
+  const table = document.getElementById(id);
+  const toggle = document.getElementById(id+'-toggle');
+  const open = table.classList.contains('open');
+  table.classList.toggle('open', !open);
+  if(toggle) toggle.classList.toggle('open', !open);
+}
+
+function toggleIssueDetail(id) {
+  const det = document.getElementById(id);
+  if(!det) return;
+  const open = det.classList.contains('open');
+  document.querySelectorAll('.issue-detail.open').forEach(d => d.classList.remove('open'));
+  if(!open) det.classList.add('open');
+}
+
+function filterAll(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.challenge-block').forEach(b => b.style.display = 'block');
+}
+
+function filterChallenge(ch, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.challenge-block').forEach(b => {
+    b.style.display = b.dataset.ch === ch ? 'block' : 'none';
+  });
+}
+
+function searchIssues(query) {
+  const q = query.toLowerCase().trim();
+  if(!q) {
+    document.querySelectorAll('.issue-row').forEach(r => r.style.display = '');
+    return;
+  }
+  document.querySelectorAll('.issue-row').forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+  // Open all tables that have visible rows
+  document.querySelectorAll('.issue-table').forEach(table => {
+    const hasVisible = [...table.querySelectorAll('.issue-row')].some(r => r.style.display !== 'none');
+    table.classList.toggle('open', hasVisible);
+  });
+}
+</script>
+</body>
+</html>

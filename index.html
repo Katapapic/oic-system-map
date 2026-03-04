@@ -57,6 +57,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
   padding:4px 6px; border-radius:4px;
   cursor:pointer; font-size:13px; color:var(--muted2);
   transition:background 0.1s;
+  user-select:none;
 }
 .sb-item:hover { background:var(--hover); color:var(--text); }
 .sb-item.active { background:var(--hover); color:var(--text); font-weight:500; }
@@ -306,31 +307,31 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
 
   <div class="sb-section">
     <div class="sb-section-label">Challenges</div>
-    <div class="sb-item">
+    <div class="sb-item" onclick="scrollTo('sec-c1')">
       <span class="icon">🟠</span>
       <span class="label">Clean & Safe Spaces</span>
     </div>
     <div class="sb-sub">
-      <div class="sb-item"><span class="icon">·</span><span class="label">Clean Spaces</span></div>
-      <div class="sb-item"><span class="icon">·</span><span class="label">Beautiful Spaces</span></div>
-      <div class="sb-item"><span class="icon">·</span><span class="label">Welcoming Spaces</span></div>
-      <div class="sb-item"><span class="icon">·</span><span class="label">Safe Spaces</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-clean-spaces')"><span class="icon">·</span><span class="label">Clean Spaces</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-beautiful')"><span class="icon">·</span><span class="label">Beautiful Spaces</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-welcoming')"><span class="icon">·</span><span class="label">Welcoming Spaces</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-safe-spaces')"><span class="icon">·</span><span class="label">Safe Spaces</span></div>
     </div>
-    <div class="sb-item">
+    <div class="sb-item" onclick="scrollTo('sec-c2')">
       <span class="icon">🔵</span>
       <span class="label">Health & Homelessness</span>
     </div>
     <div class="sb-sub">
-      <div class="sb-item"><span class="icon">·</span><span class="label">Breaking the Cycle</span></div>
-      <div class="sb-item"><span class="icon">·</span><span class="label">Health Disparities</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-breaking')"><span class="icon">·</span><span class="label">Breaking the Cycle</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-health-disp')"><span class="icon">·</span><span class="label">Health Disparities</span></div>
     </div>
-    <div class="sb-item">
+    <div class="sb-item" onclick="scrollTo('sec-c3')">
       <span class="icon">🟢</span>
       <span class="label">Keep City Safe</span>
     </div>
     <div class="sb-sub">
-      <div class="sb-item"><span class="icon">·</span><span class="label">Drug Markets</span></div>
-      <div class="sb-item"><span class="icon">·</span><span class="label">Retail Theft</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-drug-markets')"><span class="icon">·</span><span class="label">Drug Markets</span></div>
+      <div class="sb-item" onclick="scrollTo('sec-retail-theft')"><span class="icon">·</span><span class="label">Retail Theft</span></div>
     </div>
   </div>
 </div>
@@ -384,7 +385,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
     </div>
 
     <!-- ══════ CHALLENGE 1 ══════ -->
-    <div class="challenge-block" data-ch="c1">
+    <div class="challenge-block" id="sec-c1" data-ch="c1">
       <div class="challenge-header" style="background:#FEF4F2;" onclick="toggleChallenge('ch1')">
         <span class="ch-icon">🟠</span>
         <span class="ch-name" style="color:#D44C47">Maintain Clean, Safe & Welcoming Spaces</span>
@@ -398,7 +399,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
 
         <!-- DIM 1 -->
         <div class="dim-row">
-          <div class="dim-header" onclick="toggleDim('dim1')">
+          <div class="dim-header" onclick="toggleDim('dim1')" id="sec-clean-spaces">
             <span class="dim-dot" style="background:#D44C47"></span>
             <span class="dim-name">Clean Spaces</span>
             <span class="dim-count">4 problem areas · 11 issues</span>
@@ -530,7 +531,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
 
         <!-- DIM 2 placeholder -->
         <div class="dim-row">
-          <div class="dim-header" onclick="toggleDim('dim2')">
+          <div class="dim-header" onclick="toggleDim('dim2')" id="sec-beautiful">
             <span class="dim-dot" style="background:#E57354"></span>
             <span class="dim-name">Welcoming & Accessible Spaces (Family)</span>
             <span class="dim-count">5 problem areas · 18 issues</span>
@@ -562,7 +563,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
     <div class="divider"></div>
 
     <!-- ══════ CHALLENGE 2 ══════ -->
-    <div class="challenge-block" data-ch="c2">
+    <div class="challenge-block" id="sec-c2" data-ch="c2">
       <div class="challenge-header" style="background:#EDF4FB;" onclick="toggleChallenge('ch2')">
         <span class="ch-icon">🔵</span>
         <span class="ch-name" style="color:#337EA9">Transform Our Health and Homelessness System</span>
@@ -574,7 +575,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
       </div>
       <div class="challenge-body" id="ch2">
         <div class="dim-row">
-          <div class="dim-header" onclick="toggleDim('dim3')">
+          <div class="dim-header" onclick="toggleDim('dim3')" id="sec-breaking">
             <span class="dim-dot" style="background:#337EA9"></span>
             <span class="dim-name">Breaking the Cycle (Homelessness)</span>
             <span class="dim-count">3 problem areas · 6 issues</span>
@@ -648,7 +649,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
     <div class="divider"></div>
 
     <!-- ══════ CHALLENGE 3 ══════ -->
-    <div class="challenge-block" data-ch="c3">
+    <div class="challenge-block" id="sec-c3" data-ch="c3">
       <div class="challenge-header" style="background:#EDF8F5;" onclick="toggleChallenge('ch3')">
         <span class="ch-icon">🟢</span>
         <span class="ch-name" style="color:#0F7B6C">Keep Our City Safe</span>
@@ -660,7 +661,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
       </div>
       <div class="challenge-body" id="ch3">
         <div class="dim-row">
-          <div class="dim-header" onclick="toggleDim('dim4')">
+          <div class="dim-header" onclick="toggleDim('dim4')" id="sec-drug-markets">
             <span class="dim-dot" style="background:#0F7B6C"></span>
             <span class="dim-name">Open-Air Drug Markets & Public Drug Use</span>
             <span class="dim-count">4 problem areas · 9 issues</span>
@@ -731,7 +732,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
           </div>
         </div>
         <div class="dim-row">
-          <div class="dim-header" onclick="toggleDim('dim5')">
+          <div class="dim-header" onclick="toggleDim('dim5')" id="sec-retail-theft">
             <span class="dim-dot" style="background:#43A58E"></span>
             <span class="dim-name">Retail Theft & Fencing of Stolen Goods</span>
             <span class="dim-count">3 problem areas · 8 issues</span>
@@ -776,6 +777,42 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
 </div><!-- end main -->
 
 <script>
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Open parent challenge if collapsed
+  const challenge = el.closest('.challenge-block');
+  if (challenge) {
+    const body = challenge.querySelector('.challenge-body');
+    if (body && body.style.display === 'none') {
+      body.style.display = 'block';
+      const chId = challenge.id.replace('sec-', '');
+      const toggle = document.getElementById(chId + '-toggle');
+      if (toggle) toggle.classList.add('open');
+    }
+  }
+  // Open dim if it's a dim header
+  if (el.classList.contains('dim-header')) {
+    const dimId = el.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    if (dimId) {
+      const dimBody = document.getElementById(dimId);
+      if (dimBody) dimBody.style.display = 'block';
+      const toggle = document.getElementById(dimId + '-toggle');
+      if (toggle) toggle.classList.add('open');
+    }
+  }
+  // Scroll smoothly
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Highlight active sidebar item
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  const items = document.querySelectorAll('.sb-item');
+  items.forEach(item => {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(id)) {
+      item.classList.add('active');
+    }
+  });
+}
+
 function toggleChallenge(id) {
   const body = document.getElementById(id);
   const toggle = document.getElementById(id+'-toggle');

@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OIC System Map — San Francisco</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #07090D;
+  --s1: #0D1117;
+  --s2: #131A24;
+  --s3: #1A2333;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #E2E8F4;
+  --muted: #5A6A84;
+  --muted2: #8896A8;
+  --c1: #FF5722;
+  --c2: #2196F3;
+  --c3: #00C853;
+  --yellow: #FFD600;
+  --font: 'Bricolage Grotesque', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --header: 52px;
+  --nav: 44px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:var(--font); }
+
+/* ─── HEADER ─── */
+#hdr {
+  position:fixed; top:0; left:0; right:0; z-index:300;
+  height:var(--header);
+  display:flex; align-items:center; gap:0;
+  background:rgba(7,9,13,0.96);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  padding:0 24px;
+}
+.hdr-logo { font-size:18px; font-weight:800; letter-spacing:-0.02em; margin-right:20px; }
+.hdr-sep { width:1px; height:18px; background:var(--border2); margin:0 16px; }
+.hdr-crumb { font-family:var(--mono); font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; flex:1; }
+.hdr-crumb span { cursor:pointer; transition:color 0.15s; padding:2px 4px; border-radius:3px; }
+.hdr-crumb span:hover { color:var(--text); }
+.hdr-crumb span.active { color:var(--text); font-weight:500; }
+.hdr-crumb .arr { opacity:0.3; cursor:default; }
+.hdr-right { display:flex; align-items:center; gap:10px; }
+.hdr-pill { font-family:var(--mono); font-size:10px; padding:3px 10px; border-radius:20px; border:1px solid var(--border); color:var(--muted); }
+.zoom-badge { font-family:var(--mono); font-size:10px; color:var(--muted); padding:3px 8px; border:1px solid var(--border); border-radius:4px; min-width:48px; text-align:center; }
+
+/* ─── NAV TABS ─── */
+#nav {
+  position:fixed; top:var(--header); left:0; right:0; z-index:290;
+  height:var(--nav);
+  display:flex; align-items:center; gap:2px;
+  background:rgba(7,9,13,0.9);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+}
+.nav-tab {
+  height:28px; padding:0 14px;
+  display:flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:500;
+  border-radius:6px;
+  cursor:pointer;
+  border:1px solid transparent;
+  color:var(--muted);
+  transition:all 0.15s;
+  white-space:nowrap;
+}
+.nav-tab:hover { color:var(--text); background:var(--s2); }
+.nav-tab.active { color:var(--text); border-color:var(--border2); background:var(--s2); }
+.nav-dot { width:7px; height:7px; border-radius:50%; }
+
+/* ─── CANVAS ─── */
+#canvas {
+  position:fixed;
+  top:calc(var(--header) + var(--nav)); left:0; right:0; bottom:0;
+  overflow:hidden;
+  cursor:grab;
+  user-select:none;
+}
+#canvas.grabbing { cursor:grabbing; }
+#world { position:absolute; transform-origin:0 0; will-change:transform; }
+
+/* ─── SVG CONNECTORS ─── */
+#tree-svg { position:absolute; top:0; left:0; overflow:visible; pointer-events:none; }
+.link { fill:none; transition:opacity 0.2s, stroke-width 0.2s; }
+.link-hier { stroke-width:1; opacity:0.18; }
+.link-cross { stroke:#FFD600; stroke-width:1.5; stroke-dasharray:6 4; opacity:0.35; }
+.link.dim { opacity:0.04 !important; }
+.link.lit { opacity:0.8 !important; stroke-width:2 !important; }
+
+/* ─── COLUMN HEADERS ─── */
+.col-hdr {
+  position:absolute;
+  top:16px;
+  font-family:var(--mono); font-size:9px; font-weight:500;
+  letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--muted);
+  transform:translateX(-50%);
+  pointer-events:none;
+  white-space:nowrap;
+}
+
+/* ─── CHALLENGE CARDS ─── */
+.ch-card {
+  position:absolute;
+  transform:translate(-50%, -50%);
+  width:168px;
+  border-radius:14px;
+  border:1.5px solid;
+  background:var(--s1);
+  cursor:pointer;
+  transition:transform 0.2s, box-shadow 0.2s, opacity 0.25s;
+  overflow:hidden;
+}
+.ch-card:hover { transform:translate(-50%,-50%) scale(1.03); }
+.ch-card.dim { opacity:0.07; }
+.ch-card.lit { opacity:1; }
+.ch-top { padding:16px 16px 12px; }
+.ch-num { font-family:var(--mono); font-size:10px; font-weight:500; margin-bottom:6px; opacity:0.6; }
+.ch-title { font-size:14px; font-weight:700; line-height:1.25; margin-bottom:10px; }
+.ch-desc { font-size:10.5px; color:var(--muted2); line-height:1.5; }
+.ch-bottom { padding:10px 16px 14px; border-top:1px solid var(--border); display:flex; gap:14px; }
+.ch-stat { display:flex; flex-direction:column; gap:2px; }
+.ch-stat-n { font-family:var(--mono); font-size:15px; font-weight:700; }
+.ch-stat-l { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+
+/* ─── DIMENSION CARDS ─── */
+.dim-card {
+  position:absolute;
+  transform:translate(-50%,-50%);
+  width:132px;
+  border-radius:10px;
+  border:1px solid;
+  background:var(--s1);
+  cursor:pointer;
+  transition:transform 0.2s, opacity 0.25s;
+  padding:12px 13px;
+}
+.dim-card:hover { transform:translate(-50%,-50%) scale(1.04); }
+.dim-card.dim { opacity:0.06; }
+.dim-card.lit { opacity:1; }
+.dim-label { font-size:10px; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:5px; opacity:0.55; }
+.dim-title { font-size:12px; font-weight:700; line-height:1.3; }
+.dim-count { font-family:var(--mono); font-size:9px; color:var(--muted); margin-top:5px; }
+
+/* ─── PROBLEM AREA CARDS ─── */
+.pa-card {
+  position:absolute;
+  transform:translate(-50%,-50%);
+  width:118px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--s1);
+  cursor:pointer;
+  transition:transform 0.15s, opacity 0.25s, border-color 0.15s;
+  padding:9px 11px;
+}
+.pa-card:hover { transform:translate(-50%,-50%) scale(1.04); border-color:var(--border2); }
+.pa-card.dim { opacity:0.05; }
+.pa-card.lit { opacity:1; border-color:var(--border2); }
+.pa-bar { height:2px; border-radius:1px; margin-bottom:8px; }
+.pa-title { font-size:11px; font-weight:600; line-height:1.35; }
+.pa-count { font-family:var(--mono); font-size:9px; color:var(--muted); margin-top:4px; }
+
+/* ─── ISSUE CARDS ─── */
+.issue-card {
+  position:absolute;
+  transform:translate(-50%,-50%);
+  width:220px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--s1);
+  cursor:pointer;
+  transition:transform 0.15s, opacity 0.25s, border-color 0.15s, box-shadow 0.15s;
+  overflow:hidden;
+}
+.issue-card:hover { transform:translate(-50%,-50%) scale(1.02); border-color:var(--border2); box-shadow:0 4px 24px rgba(0,0,0,0.5); }
+.issue-card.dim { opacity:0.04; }
+.issue-card.lit { opacity:1; border-color:var(--border2); box-shadow:0 4px 20px rgba(0,0,0,0.4); }
+.issue-accent { height:3px; width:100%; }
+.issue-body { padding:10px 13px 11px; }
+.issue-type { font-family:var(--mono); font-size:9px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:5px; opacity:0.65; }
+.issue-title { font-size:12px; font-weight:700; line-height:1.35; margin-bottom:0; }
+/* Expanded sections shown on click */
+.issue-extra { display:none; padding:0 13px 12px; border-top:1px solid var(--border); margin-top:2px; }
+.issue-extra.open { display:block; }
+.ex-label { font-family:var(--mono); font-size:8.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin:9px 0 3px; }
+.ex-text { font-size:11px; color:var(--muted2); line-height:1.55; }
+.ex-evidence { font-size:10.5px; color:var(--muted); line-height:1.5; font-style:italic; }
+
+/* ─── TOOLTIP ─── */
+#tip {
+  position:fixed; z-index:500;
+  background:rgba(13,17,23,0.98);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:13px 16px;
+  max-width:300px;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.12s;
+  backdrop-filter:blur(10px);
+}
+#tip.on { opacity:1; }
+.tip-type { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:5px; }
+.tip-name { font-size:13px; font-weight:700; line-height:1.3; margin-bottom:7px; }
+.tip-desc { font-size:11.5px; color:var(--muted2); line-height:1.55; }
+
+/* ─── DETAIL PANEL ─── */
+#detail {
+  position:fixed; top:calc(var(--header)+var(--nav)); right:0; bottom:0;
+  width:360px;
+  background:var(--s1);
+  border-left:1px solid var(--border);
+  z-index:200;
+  overflow-y:auto;
+  transform:translateX(100%);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+#detail.open { transform:translateX(0); }
+#detail::-webkit-scrollbar { width:4px; }
+#detail::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+.det-close { position:absolute; top:14px; right:14px; width:28px; height:28px; border-radius:6px; background:var(--s2); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--muted); transition:color 0.15s; }
+.det-close:hover { color:var(--text); }
+.det-accent { height:4px; width:100%; }
+.det-inner { padding:20px; }
+.det-overline { font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:8px; }
+.det-title { font-size:18px; font-weight:800; line-height:1.2; margin-bottom:14px; }
+.det-section { margin-bottom:16px; }
+.det-sec-label { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; padding-bottom:5px; border-bottom:1px solid var(--border); }
+.det-text { font-size:12px; color:var(--muted2); line-height:1.65; }
+.det-badge { display:inline-block; font-family:var(--mono); font-size:9px; padding:3px 9px; border-radius:4px; margin-top:2px; background:var(--s2); border:1px solid var(--border); }
+
+/* ─── CONTROLS ─── */
+#ctrl { position:fixed; bottom:24px; right:24px; z-index:150; display:flex; flex-direction:column; gap:5px; }
+.ctrl-btn { width:34px; height:34px; border-radius:7px; background:rgba(13,17,23,0.92); border:1px solid var(--border2); color:var(--text); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; }
+.ctrl-btn:hover { background:var(--s3); }
+
+/* ─── OVERVIEW SIDEBAR ─── */
+#overview {
+  position:fixed;
+  bottom:24px; left:24px;
+  z-index:150;
+  display:flex; flex-direction:column; gap:6px;
+  transition:opacity 0.3s;
+}
+#overview.hidden { opacity:0; pointer-events:none; }
+.ov-btn {
+  display:flex; align-items:center; gap:9px;
+  padding:9px 14px;
+  background:rgba(13,17,23,0.92);
+  border:1px solid var(--border);
+  border-radius:9px;
+  cursor:pointer;
+  transition:border-color 0.15s, background 0.15s;
+  min-width:200px;
+}
+.ov-btn:hover { border-color:var(--border2); background:var(--s2); }
+.ov-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.ov-name { font-size:12px; font-weight:600; flex:1; }
+.ov-stat { font-family:var(--mono); font-size:9px; color:var(--muted); }
+
+/* ─── CROSS LEGEND ─── */
+#xleg {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  z-index:150;
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:10px; color:var(--muted);
+  padding:7px 14px;
+  background:rgba(13,17,23,0.9);
+  border:1px solid var(--border);
+  border-radius:20px;
+  pointer-events:none;
+}
+.xleg-line { width:22px; height:1px; background:repeating-linear-gradient(90deg,#FFD600 0,#FFD600 5px,transparent 5px,transparent 9px); }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from{opacity:0;transform:translate(-50%,-50%) translateY(8px) scale(0.95)} to{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1)} }
+.ch-card,.dim-card,.pa-card,.issue-card { animation:fadeUp 0.4s ease both; }
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div class="hdr-logo">OIC</div>
+  <div class="hdr-sep"></div>
+  <div class="hdr-crumb" id="crumb"><span class="active" onclick="home()">System Map</span></div>
+  <div class="hdr-right">
+    <div class="hdr-pill" id="countPill">3 challenges · 56 issues</div>
+    <div class="zoom-badge" id="zoomBadge">100%</div>
+  </div>
+</div>
+
+<div id="nav">
+  <div class="nav-tab active" data-ch="all" onclick="filterChallenge('all')">
+    <span class="nav-dot" style="background:#6B7A9A"></span> All Challenges
+  </div>
+  <div class="nav-tab" data-ch="c1" onclick="filterChallenge('c1')">
+    <span class="nav-dot" style="background:var(--c1)"></span> Clean, Safe & Welcoming Spaces
+  </div>
+  <div class="nav-tab" data-ch="c2" onclick="filterChallenge('c2')">
+    <span class="nav-dot" style="background:var(--c2)"></span> Health & Homelessness
+  </div>
+  <div class="nav-tab" data-ch="c3" onclick="filterChallenge('c3')">
+    <span class="nav-dot" style="background:var(--c3)"></span> Keep City Safe
+  </div>
+</div>
+
+<div id="canvas">
+  <div id="world">
+    <svg id="tree-svg"></svg>
+  </div>
+</div>
+
+<div id="tip">
+  <div class="tip-type" id="tipType"></div>
+  <div class="tip-name" id="tipName"></div>
+  <div class="tip-desc" id="tipDesc"></div>
+</div>
+
+<div id="detail">
+  <div class="det-close" onclick="closeDetail()">✕</div>
+  <div class="det-accent" id="detAccent"></div>
+  <div class="det-inner" id="detInner"></div>
+</div>
+
+<div id="overview">
+  <div class="ov-btn" onclick="focusChallenge('c1')">
+    <span class="ov-dot" style="background:var(--c1)"></span>
+    <span class="ov-name">Clean, Safe & Welcoming</span>
+    <span class="ov-stat">4 dim · 39 issues</span>
+  </div>
+  <div class="ov-btn" onclick="focusChallenge('c2')">
+    <span class="ov-dot" style="background:var(--c2)"></span>
+    <span class="ov-name">Health & Homelessness</span>
+    <span class="ov-stat">2 dim · 19 issues</span>
+  </div>
+  <div class="ov-btn" onclick="focusChallenge('c3')">
+    <span class="ov-dot" style="background:var(--c3)"></span>
+    <span class="ov-name">Keep City Safe</span>
+    <span class="ov-stat">2 dim · 17 issues</span>
+  </div>
+</div>
+
+<div id="xleg">
+  <span class="xleg-line"></span>
+  Cross-challenge connection
+</div>
+
+<div id="ctrl">
+  <button class="ctrl-btn" onclick="zoomBy(1.25)">+</button>
+  <button class="ctrl-btn" onclick="zoomBy(0.8)">−</button>
+  <button class="ctrl-btn" onclick="home()" title="Reset view" style="font-size:12px">⌂</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// DATA — exact text from Excel
+// ════════════════════════════════════════════════════════
+const CHALLENGES = [
+ {
+  id:'c1', color:'#FF5722',
+  label:'Maintain Clean, Safe & Welcoming Spaces',
+  short:'Clean, Safe & Welcoming',
+  hmw:`"How might we make San Francisco's streets, sidewalks, and public spaces consistently clean and welcoming for the 875,000 people who call the city home in order to protect public health, strengthen communities, and rebuild trust in the city's ability to deliver basic services?"`,
+  desc:`SF spent nearly $60 per capita — or $1 million per square mile — on street cleaning in FY2024–25, compared to LA's $19.54 per capita. Tourism contributes $9.26 billion to SF's economy and supports nearly 62,000 jobs. Street and sidewalk cleanliness directly affects public health, safety, and the city's economic engine.`,
+  statDim:4, statPA:10, statIssues:39,
+  dimensions:[
+   {
+    id:'d1', label:'Clean Spaces', color:'#FF5722',
+    evidence:`Feces: 34% of evaluated routes had at least one instance of feces. 30% of surveyed streets had animal or human feces — up sharply from 18.5% in the first half of 2023. Graffiti: 89% of city streets had some form of graffiti in 2024–2025. Litter: Street segments with litter decreased from 9.3% to 6.7% between early 2022 and mid-2025.`,
+    problemAreas:[
+     {
+      id:'pa1', label:'Garbage Infrastructure', color:'#FF5722',
+      issues:[
+       {id:'i1', title:'Lack of garbage bins', type:'Technology & Infrastructure',
+        desc:`There is a lack of trashcans in the city, where there are "bin-deserts", where there are no bins to dispose of trash in 2 block stretches. There have been reported cases of bins that have been taken, because they were continually overflowing with trash and there were complaints from residents, but then not replaced so more trash accumulated on streets.`,
+        why:`People don't have sufficient places to throw their trash, throwing it instead on the street, bothering residents and creating unwelcoming and dirty public spaces`,
+        evidence:`"In recent months, the Department of Public Works has removed more than 6 percent — 300 to 400 — of The City's approximately 5,000 trash cans.`},
+       {id:'i2', title:'Homeless people rummaging through trash', type:'Technology & Infrastructure',
+        desc:`Homeless people go through trash looking for food, and things they can use, often leaving trash on the floor.`,
+        why:`Trash is taken out of bins and left on the street and sidewalks, contributing to the amount of trash on streets.`,
+        evidence:``},
+       {id:'i3', title:'Insufficient bin emptying frequency', type:'Municipal Processes & Service Delivery',
+        desc:`There is insufficient frequency of emptying garbage bins in some areas of the city`,
+        why:`Garbage bins are overflowing with trash, where people start to use the area next to bins to dispose of their trash, creating dirty sidewalks. When this happens, people complain to 311, and some of the responses have been to take the bin away without replacement, which accentuates the problem and creates garbage bin deserts.`,
+        evidence:``},
+      ]
+     },
+     {
+      id:'pa2', label:'Illegal Dumping', color:'#FF5722',
+      issues:[
+       {id:'i4', title:'Bins being used for illegal dumping', type:'Resident Behaviour',
+        desc:`Residents are using garbage bins meant for litter, to dispose of large household objects or construction debris`,
+        why:`Bins are being quickly filled up by objects that have a different collection route, where people no longer have space to dispose of their litter.`,
+        evidence:``},
+      ]
+     },
+     {
+      id:'pa3', label:'Operational Inefficiency and Lack of Processes', color:'#FF5722',
+      issues:[
+       {id:'i5', title:'High budget allocation in cleaning without significant improvement', type:'Municipal Processes & Service Delivery',
+        desc:`San Francisco spends significantly more per capita on cleaning compared to other US cities (LA, New York), but achieves worse cleanliness outcomes.`,
+        why:`Indicates systemic inefficiency and poor ROI on public spending.`,
+        evidence:`$59.08 per capita vs $19.54 in LA; spending per square mile $1M vs $159k in LA. "San Francisco budgets approximately three times more per person than Los Angeles."`},
+       {id:'i6', title:'Misuse and diversion of cleaning budget', type:'Municipal Processes & Service Delivery',
+        desc:`Street cleaning funds are left unused or redirected to non-cleaning purposes such as events or administrative needs.`,
+        why:`Reduces actual cleaning capacity despite large budgets; weakens accountability; undermines effectiveness of public spending.`,
+        evidence:`"Average annual underspend of 11%." $15.2M unspent in FY23–24; $11M diverted; 63% budget increase since 2018 without improved outcomes.`},
+       {id:'i7', title:'Lack of processes to evaluate if cleaning is effective (routes, frequency, needs)', type:'Municipal Processes & Service Delivery',
+        desc:`Street sweeping routes and operations rely on outdated plans and weak performance metrics focused on outputs, not cleanliness outcomes.`,
+        why:`Leads to delayed responses, inefficient resource allocation, and persistent cleanliness issues.`,
+        evidence:`Nearly 800,000 complaints in 2025; trash was the top complaint category (~100,000). "The SF311 system is the primary conduit for public dissatisfaction." / "Residents filed nearly 800,000 complaints in 2025."`},
+       {id:'i8', title:'Lack of written enforcement procedures', type:'Municipal Processes & Service Delivery',
+        desc:`Weak enforcement against dumping and failure to collect fines.`,
+        why:`Encourages repeat violations; reduces deterrence and cleanup funding.`,
+        evidence:`$3M in fines uncollected; illegal dumping citations declining. "San Francisco suffers from a 'weak' enforcement culture." / "Public Works has not actively pursued unpaid citations."`},
+      ]
+     },
+     {
+      id:'pa4', label:'Homelessness & Encampments', color:'#FF5722',
+      issues:[
+       {id:'i9', title:'Encampment-related waste', type:'Resident Behaviour',
+        desc:`Homeless encampments generate trash, debris, and human waste in public spaces.`,
+        why:`Creates biohazards; increases cleaning costs; complicates operational efficiency.`,
+        evidence:`8,300 homeless individuals; encampment cleaning costs ~$9M annually (15% of total budget). "Street cleanliness in San Francisco is inextricably linked to the homelessness crisis."`},
+       {id:'i10', title:'Insufficient number of accessible public restrooms', type:'Technology & Infrastructure',
+        desc:`The number of public restrooms is insufficient for SF residents, and there are no restrooms open at night, forcing open air urination and defecation.`,
+        why:`Increases pathogen exposure and biohazard cleaning costs. Creates inaccessible places for people.`,
+        evidence:``},
+       {id:'i11', title:'Pathogen exposure from fecal contamination', type:'Resident Behaviour',
+        desc:`89% of city streets had some form of graffiti in fiscal year 2024-2025, up from 82% in early 2022`,
+        why:``,evidence:``},
+      ]
+     },
+    ]
+   },
+   {
+    id:'d2', label:'Beautiful Spaces', color:'#FF7043',
+    evidence:`89% of city streets had graffiti in 2024–2025, up from 82% in 2022. Neighborhood disparities: Bayview, Mission District, Tenderloin, and Bernal Heights reported worsening conditions.`,
+    problemAreas:[
+     {
+      id:'pa5', label:'Graffiti', color:'#FF7043',
+      issues:[
+       {id:'i12', title:'High presence of graffiti on streets', type:'Resident Behaviour',
+        desc:``,why:``,evidence:``},
+      ]
+     },
+    ]
+   },
+   {
+    id:'d3', label:'Welcoming & Accessible Spaces (Family)', color:'#FF8A65',
+    evidence:`$1 Billion Parks Investment (2018–2030). JFK Promenade became the most used open space in the city. India Basin Shoreline Park opened October 2024.`,
+    problemAreas:[
+     {
+      id:'pa6', label:'Physical Infrastructure & Design', color:'#FF8A65',
+      issues:[
+       {id:'i13', title:'Insufficient public restrooms in parks', type:'Technology & Infrastructure',desc:``,why:``,evidence:``},
+       {id:'i14', title:'Lack of shade, seating, fountains', type:'Technology & Infrastructure',desc:``,why:``,evidence:``},
+       {id:'i15', title:'Missing wheelchair ramps and accessible sidewalks', type:'Technology & Infrastructure',desc:``,why:``,evidence:``},
+       {id:'i16', title:'POPOS concentrated downtown, not neighborhoods', type:'Technology & Infrastructure',desc:``,why:``,evidence:``},
+       {id:'i17', title:'Inadequate stroller and mobility device access', type:'Technology & Infrastructure',desc:``,why:``,evidence:``},
+      ]
+     },
+     {
+      id:'pa7', label:'Programming & Activation', color:'#FF8A65',
+      issues:[
+       {id:'i18', title:'Parks underutilized due to poor programming', type:'',desc:``,why:``,evidence:``},
+       {id:'i19', title:'Complex permitting discourages community events', type:'',desc:``,why:``,evidence:``},
+       {id:'i20', title:'Few culturally relevant activities offered', type:'',desc:``,why:``,evidence:``},
+       {id:'i21', title:'Insufficient family-oriented programming citywide', type:'',desc:``,why:``,evidence:``},
+      ]
+     },
+     {
+      id:'pa8', label:'Affordability & Economic Barriers', color:'#FF8A65',
+      issues:[
+       {id:'i22', title:'Rising fees exclude low-income users', type:'',desc:``,why:``,evidence:``},
+       {id:'i23', title:'High cost of living limits participation', type:'',desc:``,why:``,evidence:``},
+       {id:'i24', title:'User fees for picnic spots and venues', type:'',desc:``,why:``,evidence:``},
+      ]
+     },
+     {
+      id:'pa9', label:'Equity & Inclusion', color:'#FF8A65',
+      issues:[
+       {id:'i25', title:'No multilingual signage in parks', type:'',desc:``,why:``,evidence:``},
+       {id:'i26', title:'Programming ignores non-English speaking residents', type:'',desc:``,why:``,evidence:``},
+       {id:'i27', title:'Unequal park quality across neighborhoods', type:'',desc:``,why:``,evidence:``},
+       {id:'i28', title:'Low-income areas have less park space', type:'',desc:``,why:``,evidence:``},
+      ]
+     },
+    ]
+   },
+   {
+    id:'d4', label:'Safe Spaces (Perception, Transit, etc.)', color:'#FFAB91',
+    evidence:`Drug offense rates rose 54% citywide. SF's drug offense rate is 121% above 2019 levels — highest among 19 major U.S. cities.`,
+    problemAreas:[
+     {
+      id:'pa10', label:'Perception & Narrative', color:'#FFAB91',
+      issues:[
+       {id:'i29', title:'Media amplifies safety doom narrative', type:'',desc:``,why:``,evidence:``},
+       {id:'i30', title:"Political actors weaponize SF's reputation", type:'',desc:``,why:``,evidence:``},
+       {id:'i31', title:'Safety perception lags crime reality', type:'',desc:``,why:``,evidence:``},
+       {id:'i32', title:'Social media spreads fear faster than facts', type:'',desc:``,why:``,evidence:``},
+      ]
+     },
+     {
+      id:'pa11', label:'Visible Urban Disorder', color:'#FFAB91',
+      issues:[
+       {id:'i33', title:'Open-air drug use on streets', type:'',desc:``,why:``,evidence:``},
+       {id:'i34', title:'Overdoses happening in public spaces', type:'',desc:``,why:``,evidence:``},
+       {id:'i35', title:'Homeless encampments near public spaces', type:'',desc:``,why:``,evidence:``},
+       {id:'i36', title:'Trash and litter signal danger', type:'',desc:``,why:``,evidence:``},
+      ]
+     },
+     {
+      id:'pa12', label:'Actual Crime & Enforcement', color:'#FFAB91',
+      issues:[
+       {id:'i37', title:'Uneven crime recovery across neighborhoods', type:'',desc:``,why:``,evidence:``},
+       {id:'i38', title:'Retail theft still concentrated downtown', type:'',desc:``,why:``,evidence:``},
+       {id:'i39', title:'SFPD chronically understaffed citywide', type:'',desc:``,why:``,evidence:``},
+       {id:'i40', title:'Short jail stays enable repeat offending', type:'',desc:``,why:``,evidence:``},
+       {id:'i41', title:'Drug dealers return after arrest', type:'',desc:``,why:``,evidence:``},
+      ]
+     },
+     {
+      id:'pa13', label:'Accountability & Institutional Trust', color:'#FFAB91',
+      issues:[
+       {id:'i42', title:'Low prosecution rates undermine deterrence', type:'',desc:``,why:``,evidence:``},
+       {id:'i43', title:'Weak enforcement culture persists citywide', type:'',desc:``,why:``,evidence:``},
+       {id:'i44', title:"Residents distrust city's safety response", type:'',desc:``,why:``,evidence:``},
+       {id:'i45', title:'Lack of community-police trust', type:'',desc:``,why:``,evidence:``},
+      ]
+     },
+    ]
+   },
+  ]
+ },
+ {
+  id:'c2', color:'#2196F3',
+  label:'Transform Our Health and Homelessness System',
+  short:'Health & Homelessness',
+  hmw:`"How might we stop people from losing their housing in the first place, for San Franciscans on the edge of homelessness — including low-income renters, families, and people with mental health or addiction challenges — in order to break the cycle before it starts and keep communities intact?"`,
+  desc:`San Francisco's homelessness crisis is one of the most persistent and costly urban challenges in the United States. The 2024 Point-in-Time Count found 8,323 people experiencing homelessness — a 7.3% increase from 2022. More than 20,000 people seek homeless services over a full year. The Department of Homelessness and Supportive Housing operates with a budget of $690 million — 142% higher than in 2019 — yet the overall homeless population continues to grow.`,
+  statDim:2, statPA:7, statIssues:19,
+  dimensions:[
+   {
+    id:'d5', label:'Breaking the Cycle (Homelessness)', color:'#2196F3',
+    evidence:`8,323 total people experiencing homelessness (PIT Count, January 2024). 4,354 unsheltered — lowest in 10 years. 2,989 chronically homeless — up 11% since 2022. Over 20,000 seek homeless services in SF over the course of a year. For every 1 person exiting homelessness, ~3 new people enter. SF budget for homelessness: ~$690 million/year. Family homelessness increased 94% between 2022 and 2024.`,
+    problemAreas:[
+     {
+      id:'pa14', label:'Structural / Systemic Issues', color:'#2196F3',
+      issues:[
+       {id:'i46', title:'Housing Unaffordability and Supply Shortage', type:'Regulation & Public Policy',
+        desc:`San Francisco has one of the most expensive housing markets in the world, driven by decades of restrictive zoning, slow permitting, and insufficient new construction. The supply of affordable housing falls far short of demand, especially for low- and moderate-income residents.`,
+        why:`When housing costs vastly exceed incomes, any life disruption — job loss, medical emergency, relationship breakdown — can push people into homelessness. Without affordable alternatives, displaced residents have nowhere to go. The housing deficit makes homelessness a structural inevitability rather than an individual failure.`,
+        evidence:`Median home price ~$1.29M (2025); median rent $3,148/month — 55% above U.S. average; 1BR avg $3,600/month. City did not allow buildings over 40ft in most areas; permitting averaged 450+ calendar days (longest of any large U.S. city as of 2022). Bay Area permitted only 50% of needed homes 2007–2014. 59% of homeless respondents last lived in SF — meaning they were locals, not migrants.`},
+       {id:'i47', title:'Racial Inequality and Systemic Disparities', type:'Regulation & Public Policy',
+        desc:`Homelessness in San Francisco is deeply racialized, reflecting and amplifying structural inequalities embedded in historical housing policy, the economy, and the justice system. Black, Hispanic/Latine, and transgender/gender-nonconforming individuals are dramatically overrepresented.`,
+        why:`Communities historically excluded from homeownership and wealth-building face far greater vulnerability to homelessness. Without addressing the racial equity dimension, homelessness interventions will continue to fail the most marginalized groups.`,
+        evidence:`Black residents = ~5% of SF population but 25–37% of homeless population; Hispanic/Latine = 15% of population but 34% of homeless (2024 PIT Count); TGNC individuals = 9% of homeless (up from 4% in 2022); 28% of homeless identify as LGBTQ+.`},
+       {id:'i48', title:'Poverty, Income Inequality, and Cost of Living', type:'Regulation & Public Policy',
+        desc:`San Francisco's extreme income inequality — where enormous tech-sector wealth coexists with deep poverty — has produced a housing market that is structurally inaccessible to low-income residents.`,
+        why:`When housing costs are so far beyond the means of low-income residents that no realistic income or subsidy can bridge the gap, homelessness becomes the structural endpoint of poverty.`,
+        evidence:`Median monthly income of SF homeless before losing housing: $960 (UCSF 2023); SF median rent: $3,148/month — making the housing-to-income ratio unworkable. Housing costs in SF are 242% higher than the U.S. average.`},
+      ]
+     },
+     {
+      id:'pa15', label:'Behavioral / Health System', color:'#2196F3',
+      issues:[
+       {id:'i49', title:'Substance Use and the Fentanyl/Drug Crisis', type:'Resident Behaviour',
+        desc:`San Francisco faces a severe intersection of homelessness and drug addiction, compounded by the fentanyl epidemic. While substance use is both a cause and consequence of homelessness, treatment capacity is far too limited to meet the scale of need. Critically, research shows that most drug use among homeless individuals begins after losing housing — not before.`,
+        why:`Substance use disorders make it harder to find employment and housing, and increase risk of overdose and death. But since homelessness itself drives drug adoption as a coping mechanism, treating addiction without first addressing housing instability will not resolve the crisis.`,
+        evidence:`806 drug overdose deaths in SF in 2023 (record high); 42% of homeless drug users began regular use only after becoming homeless (UCSF BHHI, 2025); only 8% cited drug use as primary reason for losing housing; 32% of homeless adults report regular meth use, 11% opioid use; 28% wanted treatment but could not access it; only 46 spaces available in city-run treatment centers.`},
+       {id:'i50', title:'Mental Health Crisis and Inadequate Behavioral Health System', type:'Resident Behaviour',
+        desc:`A large and growing share of San Francisco's homeless population lives with untreated or inadequately treated mental illness. The city's behavioral health infrastructure — inpatient beds, outpatient services, case management — lacks the capacity to meet demand, leaving many people cycling through ERs, jails, and streets.`,
+        why:`Without adequate mental health treatment, individuals experiencing both homelessness and psychiatric conditions cannot stabilize. Untreated illness makes it nearly impossible to secure and maintain housing.`,
+        evidence:`51% of SF homeless report psychiatric/emotional conditions (2024 PIT Count, +15% since 2022); 46% have serious mental health or substance use disorder; city needs 152–225 new psychiatric beds (SF Controller 2024); conservatorship law (2019) helped only 4 people in 4 years.`},
+      ]
+     },
+     {
+      id:'pa16', label:'Response System Inefficiencies', color:'#2196F3',
+      issues:[
+       {id:'i51', title:'High Inflow Rate and Inadequate Prevention', type:'Municipal Processes & Service Delivery',
+        desc:`San Francisco's homelessness response system is overwhelmed by the rate at which new people enter homelessness. Prevention programs — rental assistance, eviction defense, and financial aid — are severely underfunded and underscaled relative to need, meaning the city is constantly in emergency response mode rather than preventing the crisis upstream.`,
+        why:`When three people enter homelessness for every one who exits, the overall population cannot meaningfully decrease regardless of how effective exit programs are. Without scaling prevention — far cheaper than emergency shelter or permanent supportive housing — the city will continue spending billions without solving the structural problem.`,
+        evidence:`For every 1 person exiting homelessness, ~3 enter (HSH, 2024); 22,000+ people entered the response system 2022–2024; 8,235 households received prevention services in FY2023–24 vs. a stated 5-year goal of 18,000; family homelessness +94% (2022–2024).`},
+      ]
+     },
+    ]
+   },
+   {
+    id:'d6', label:'Reducing Health Disparities', color:'#42A5F5',
+    evidence:`Premature death and preventable illness: Heart disease-related hospitalizations among Black San Franciscans in their 40s and 50s are comparable to hospitalization rates seen in people over 75 in other races. Diabetes prevalence among Black SF residents quadrupled over 30 years. Black and Pacific Islander SF residents have the lowest life expectancy in the city.`,
+    problemAreas:[
+     {
+      id:'pa17', label:'Social Determinants of Health', color:'#42A5F5',
+      issues:[
+       {id:'i52', title:'Income & Wealth Gap as Health Driver', type:'Regulation & Public Policy',
+        desc:`Extreme income inequality between racial groups in SF means that Black, Latino, and Pacific Islander residents systematically lack the financial resources to access health-promoting goods — quality food, safe housing, preventive care, and stress reduction.`,
+        why:`Income predicts life expectancy more strongly than any other single factor. Black SF households earning under a third of white median income face compounding barriers: choosing between food and medical copays, living in cheaper but unhealthier neighborhoods, experiencing chronic stress of financial precarity.`,
+        evidence:`2023 median household income: Black $47K, White $158K, overall $127K — 3.4:1 ratio. 54% of Black/African American SF residents live below 200% FPL vs. 16% of white residents. Heart disease hospitalization among Black SF residents in their 40s–50s comparable to rates seen in people over 75 in other races.`},
+       {id:'i53', title:'Food Deserts & Nutrition Insecurity', type:'Regulation & Public Policy',
+        desc:`Several SF neighborhoods with the highest concentrations of low-income residents of color are designated food deserts — lacking access to affordable fresh produce, while corner stores sell processed food at elevated prices.`,
+        why:`Poor nutrition is directly linked to higher rates of obesity, type 2 diabetes, cardiovascular disease, and adverse birth outcomes — all conditions where racial disparities in SF are most severe.`,
+        evidence:`USDA designated Oceanview, Merced, Ingleside, Visitation Valley, Bayview Hunters Point, and Treasure Island as neighborhoods with low food access. 26.5% of Latinas in SF experience food insecurity during pregnancy — highest of any group tracked.`},
+       {id:'i54', title:'Residential Segregation & Neighborhood Deprivation', type:'Urban Landscape & Geography',
+        desc:`Historical policies (redlining, Fillmore urban renewal, exclusionary zoning) concentrated poverty, pollution, and disinvestment in specific neighborhoods — primarily Bayview Hunters Point, Tenderloin, Mission, Visitacion Valley.`,
+        why:`Neighborhood conditions are a primary driver of health. People in lower-income SF zip codes face higher hospitalization rates for diabetes, hypertension, and cardiovascular disease; fewer parks, recreation facilities, and healthy food options.`,
+        evidence:`In highly segregated Black/Latino neighborhoods in the Bay Area, household income is $27K lower per year and home values $131K lower. Infant deaths unevenly distributed: zero infant deaths in 10 years in affluent zip code 94129; more than 20 in lower-income 94124 (Bayview) over same period.`},
+      ]
+     },
+     {
+      id:'pa18', label:'Prenatal, Maternal & Infant Health Disparities', color:'#42A5F5',
+      issues:[
+       {id:'i55', title:'Racial Gap in Preterm Birth & Infant Mortality', type:'Regulation & Public Policy',
+        desc:`Black mothers in SF experience dramatically higher rates of preterm birth, very preterm birth, and infant mortality than white mothers — and the gap is widening, not narrowing.`,
+        why:`Preterm birth is the leading cause of infant death and a major driver of lifelong health complications including developmental delays, chronic respiratory conditions, and cognitive impairment.`,
+        evidence:`Black preterm birth rate SF: 16% (2024) — highest since state began tracking in 2007. 1 in 6 Black babies born prematurely in SF (2024), vs. 1 in 17 white babies — the disparity is the largest in state records. Very premature Black births (≤32 weeks) increased 71% between 2016 and 2024.`},
+       {id:'i56', title:'Late / Absent Prenatal Care', type:'Regulation & Public Policy',
+        desc:`Black and Latino mothers are significantly more likely to begin prenatal care late (second or third trimester) or receive no prenatal care at all — driven by financial, geographic, cultural, and systemic barriers.`,
+        why:`Adequate prenatal care is the single most effective intervention to prevent preterm birth, low birthweight, and maternal death. Late or absent care means risk factors go undetected and unmanaged.`,
+        evidence:`Black or African American mothers 49% more likely to receive late or no prenatal care than average. SF maternal mortality rate: 11.2 deaths per 100,000 live births — nearly 3.4× the Healthy People national objective. 87% of pregnancy-related deaths are preventable.`},
+       {id:'i57', title:'Underspending on Maternal Equity Programs', type:'Regulation & Public Policy',
+        desc:`Despite documented and worsening disparities, SF has chronically underspent its state-allocated maternal equity funding — returning millions to Sacramento even as Black birth outcomes deteriorated.`,
+        why:`Program underspending directly translates into foregone prenatal visits, fewer doulas for Black mothers, delayed home visits, and reduced culturally congruent care.`,
+        evidence:`SF returned $791,434 (34%) of Perinatal Equity Initiative funds disbursed between 2021 and 2024 back to the state. In 2024, as Black/white preterm birth disparity reached record levels, SF returned 43% of its budgeted PEI funds — the highest proportion yet. City underspent its budget to address maternal inequities by at least $8 million since PEI funding began.`},
+      ]
+     },
+     {
+      id:'pa19', label:'Chronic Disease Disparities', color:'#42A5F5',
+      issues:[
+       {id:'i58', title:'Diabetes Hospitalization & Mortality Gap', type:'Regulation & Public Policy',
+        desc:`Black and Latino SF residents face dramatically higher rates of type 2 diabetes diagnosis, uncontrolled disease, hospitalization, and diabetes-related death compared to white and Asian residents.`,
+        why:`Diabetes is a disease of manageable risk — early diagnosis, lifestyle support, and medication access can prevent hospitalization and death. The stark racial gap reflects not a biological inevitability but a failure of preventive care.`,
+        evidence:`Diabetes hospitalization rate: Black/African American 40.31 per 10,000 vs. Hispanic/Latino 12.55, White 6.04, Asian/PI 3.71 — a 6.7:1 Black-to-white ratio. Diabetes prevalence among Black/African Americans in SF quadrupled over the past 30 years.`},
+       {id:'i59', title:'Cardiovascular Disease & Hypertension', type:'Regulation & Public Policy',
+        desc:`Black SF residents are hospitalized for hypertension and heart failure at 3–5× the rate of all other racial groups, and face a substantially higher risk of cardiovascular mortality.`,
+        why:`Cardiovascular disease is the leading cause of death in SF. The severity of the racial gap reflects the compounding effects of chronic stress, food environment, economic insecurity, and historical underscreening.`,
+        evidence:`Hypertension/heart failure hospitalization rates for Black/African Americans: 3–5× higher than all other races in SF. Heart disease hospitalization for Black SF residents in their 40s and 50s comparable to rates seen in people over 75 in other races — a 25–35-year premature aging effect.`},
+      ]
+     },
+     {
+      id:'pa20', label:'Overdose Death Disparities', color:'#42A5F5',
+      issues:[
+       {id:'i60', title:"Black SF Residents' Extreme Overdose Mortality Rate", type:'Resident Behaviour',
+        desc:`Black San Franciscans — particularly older Black men with histories of homelessness and economic marginalization — die from overdoses at catastrophically disproportionate rates relative to their share of the population.`,
+        why:`This is not a drug-use-prevalence disparity but a mortality disparity driven by economic precarity, housing instability, polysubstance exposure, and barriers to treatment.`,
+        evidence:`Black SF residents: opioid overdose death rate 5× higher than the citywide rate. Black residents: 33% of overdose deaths in SF in H1 2023, vs. ~5% of city population. 410 Black men (born 1951–1970) died of overdoses in SF from Jan 2020 through Oct 2024. SF's Black overdose disparity is greater than any other major US city.`},
+       {id:'i61', title:'Latinx Overdose Mortality — Emerging & Underserved Crisis', type:'Resident Behaviour',
+        desc:`While Black SF residents face the most severe overdose disparity, the Latinx community is experiencing the fastest-growing overdose mortality trend — including the first month on record where Latinx overdose deaths exceeded Black deaths.`,
+        why:`Latinx overdose deaths are growing faster than community-specific interventions are being built. The community's risk is compounded by undocumented status (limiting access to public treatment), language barriers in treatment settings, and social stigma.`,
+        evidence:`November 2023: first time on record that Latinx residents (28%) exceeded Black residents (25%) in monthly SF overdose deaths — SF's deadliest year on record. SF was in the top 3 California counties for opioid-related death rates among Latinos.`},
+       {id:'i62', title:'Treatment Access Gaps & Cultural Mismatch', type:'Municipal Processes & Service Delivery',
+        desc:`Even when Black and Latino SF residents want treatment for substance use disorders, they face barriers: culturally mismatched programs, geographic inaccessibility, lack of peer navigators, and systems not designed around the specific traumas and experiences of their communities.`,
+        why:`A disparity in overdose death rates driven by treatment access barriers is a solvable problem — but only if solutions are community-designed and culturally congruent.`,
+        evidence:`SFDPH: 4,500+ people served for substance use disorders across 47 sites — but Black and Latino communities remain overrepresented in deaths relative to treatment uptake. Opioid settlement funding: $45M allocated for racial disparity initiatives.`},
+      ]
+     },
+     {
+      id:'pa21', label:'Service Response: Cultural & Linguistic Barriers', color:'#42A5F5',
+      issues:[
+       {id:'i63', title:'Cultural & Linguistic Barriers in Clinical Care', type:'Municipal Processes & Service Delivery',
+        desc:`Health services in SF are often delivered in ways that do not meet the cultural, linguistic, or trust needs of Black, Latino, Pacific Islander, and other minority communities — leading to avoidance of preventive care, delayed help-seeking, and poorer outcomes in treatment.`,
+        why:`Cultural competence is not an add-on — it is evidence-based care. Studies show culturally congruent doulas, peer navigators, and community health workers improve birth outcomes, treatment engagement, and chronic disease management.`,
+        evidence:`1 in 4 Black Californians felt they could have received better care if they were a different race/ethnicity (California Health Interview Survey 2024). 2025 SFHIP CHNA: 'barriers like language access, financial hardship, and limited providers contribute to delayed or inadequate care.'`},
+       {id:'i64', title:'Implicit Bias & Discrimination in Clinical Settings', type:'Municipal Processes & Service Delivery',
+        desc:`Implicit racial bias among healthcare providers — affecting how pain is assessed, how concerns are taken seriously, how quickly referrals are made — contributes directly to worse outcomes for Black and Latino patients, particularly in maternal care.`,
+        why:`Implicit bias is a documented cause of preventable maternal deaths. Black women's concerns about pain and complications are statistically less likely to be taken seriously by providers.`,
+        evidence:`CA 2019 Dignity in Pregnancy & Childbirth Act: required implicit bias training for medical providers treating pregnant patients. 2024 CA Attorney General investigation: most hospitals out of compliance. In CA: Black women account for 5% of pregnancies but 21% of maternal deaths.`},
+      ]
+     },
+    ]
+   },
+  ]
+ },
+ {
+  id:'c3', color:'#00C853',
+  label:'Keep Our City Safe',
+  short:'Keep City Safe',
+  hmw:`"How might we make it easier for people struggling with addiction to access care and support, for San Francisco residents, families, and frontline workers in the Tenderloin, SoMa, and Mission — in order to reduce the daily harm of the drug crisis on people's lives and public spaces before it's too late?"`,
+  desc:`San Francisco's drug crisis is one of the most acute urban public health emergencies in the United States. In 2024, 635 people died from unintentional drug overdoses — while 2023 was the deadliest year on record with 810 fatal overdoses. Only an estimated 25% of San Franciscans with opioid use disorder receive medications to treat it, compared to over 75% in Zurich. Drug offense rates rose 54% citywide between 2025 and 2024, and SF's drug offense rate is 121% above 2019 levels.`,
+  statDim:2, statPA:6, statIssues:17,
+  dimensions:[
+   {
+    id:'d7', label:'Open-Air Drug Markets & Public Drug Use', color:'#00C853',
+    evidence:`811 OD deaths (2023); 635 deaths (2024, -20%); 80%+ fentanyl; drug offense rate +121% vs 2019. Human cost: San Francisco recorded 811 accidental overdose deaths in 2023 — the deadliest year on record. Violence & crime: Drug dealing inherently 'begets violence' in the form of turf wars, armed robberies, and assaults, per SF District Attorney Brooke Jenkins.`,
+    problemAreas:[
+     {
+      id:'pa22', label:'Organized Drug Supply & Trafficking Networks', color:'#00C853',
+      issues:[
+       {id:'i65', title:'Transnational Drug Supply Chain', type:'',
+        desc:`Fentanyl and other drugs are manufactured in Mexico (Sinaloa Cartel), sourced from Chinese precursors, and distributed through organized Honduran trafficking networks operating out of the East Bay.`,
+        why:`A sophisticated criminal supply chain delivers drugs at street-level prices so low ($5–10/dose) that demand cannot be suppressed by arrest alone, and the market constantly replenishes after enforcement operations.`,
+        evidence:`DEA: Sinaloa Cartel primarily manufactures fentanyl; Honduran orgs control Tenderloin street sales. 14 defendants indicted in one Tenderloin network (2019 federal grand jury). Dealers commuted via BART from East Bay into Tenderloin daily. 6+ Honduran dealers extradited from Honduras to face SF charges (2024). DMACC Year 1: 199 kg drugs, 110.6 kg fentanyl seized by SFPD alone.`},
+       {id:'i66', title:'Weak Deterrence / Short Jail Stays', type:'',
+        desc:`Despite thousands of arrests, repeat drug dealers return to the street within days due to extremely short average jail stays and low prosecution rates.`,
+        why:`Without meaningful deterrent consequences, the business calculus for street dealing remains favorable. Dealers know they will be released in days and resume selling, making arrests a marginal disruption.`,
+        evidence:`Average jail time for repeat fentanyl dealers: 4–5 days (SFPD Captain Canning, ABC7). Only ~3% of drug-dealing arrests result in post-conviction jail time (Hoover Institution analysis). Under 20% of those arrested for drug sales are prosecuted and convicted.`},
+      ]
+     },
+     {
+      id:'pa23', label:'Public Drug Use & Addiction Crisis', color:'#00C853',
+      issues:[
+       {id:'i67', title:'Fentanyl Overdose Epidemic', type:'Resident Behaviour',
+        desc:`Fentanyl — ~50x more potent than heroin — has flooded the illicit drug supply since ~2019, making overdose highly likely even for experienced users, especially when mixed with meth, cocaine, or xylazine.`,
+        why:`Fentanyl's extreme potency means a microscopic dosing error is fatal. Deaths cluster in open-use areas like the Tenderloin, traumatizing residents, overwhelming EMS, and occurring in public view — including near schools, libraries, and transit stations.`,
+        evidence:`811 accidental overdose deaths in 2023 — deadliest year on record. 635 deaths in 2024 — 20% decline (buprenorphine +54%, methadone +34%). >80% of 2023 deaths involved fentanyl. Average 2+ deaths per day during peak of 2023 crisis.`},
+       {id:'i68', title:'Insufficient Addiction Treatment Capacity', type:'Municipal Processes & Service Delivery',
+        desc:`The number of people with severe substance use disorder in SF far exceeds available treatment resources. Many who want help cannot access it in a timely way, leaving them on the street.`,
+        why:`Treatment gaps force people with addiction to remain in open-air drug markets — both as users and as participants in drug economies — because there is no viable alternative.`,
+        evidence:`Only 46 city-run treatment spaces available at peak of crisis. Only 14 of 2,636 jailed individuals under DMACC Year 1 sought treatment. 28% of homeless drug users wanted treatment but couldn't access it (UCSF, 2025).`},
+       {id:'i69', title:'Drug-Related Violence & Assault', type:'Resident Behaviour',
+        desc:`Open-air drug markets are associated with firearms, turf conflicts, armed robbery of drug users, and dealer-on-dealer violence, generating a persistent cycle of violent crime in affected neighborhoods.`,
+        why:`The Tenderloin is consistently SF's highest-violence district relative to its size. Drug dealing inherently generates violence through competition, debt collection, and robbery of vulnerable users.`,
+        evidence:`SF DA Jenkins: drug dealing 'begets violence' through turf wars, robberies, and assaults. 1,013 drug offense incidents in Tenderloin in 12-month period ending Aug 2023. Gun violence victims in Tenderloin up 77% year-to-date at one point in 2024. Only 4 beat officers available for Tenderloin station in 2024 (down from 30 five years prior).`},
+      ]
+     },
+     {
+      id:'pa24', label:'Enforcement & Response Systems', color:'#00C853',
+      issues:[
+       {id:'i70', title:'SFPD Officer Shortage', type:'Regulation & Public Policy',
+        desc:`San Francisco's police force is significantly understaffed relative to optimal levels, limiting its ability to sustain continuous enforcement pressure on drug markets, especially at night.`,
+        why:`Without sustained 24/7 enforcement presence, drug markets reconstitute after daytime operations end. DMACC analysis showed drug arrests plummeted after midnight because staffing ran out.`,
+        evidence:`SFPD shortage: ~500 sworn officers below optimal staffing. Full-duty sworn officers dropped 12% from 2019–2022. Tenderloin beat officers: 4 in 2024 vs. 30 five years prior. 9-minute average 911 response time — near record high. 255-day average time from police application to hire.`},
+       {id:'i71', title:'Drug Market Displacement', type:'Regulation & Public Policy',
+        desc:`Intensive enforcement in one location — such as the Tenderloin — pushes drug markets to adjacent areas (Mission, SoMa, Civic Center) rather than eliminating them, expanding the footprint of the problem.`,
+        why:`Displacement undermines enforcement ROI and spreads the harms of open-air drug use to new neighborhoods, increasing the burden on already stretched police resources and alarming residents in previously stable areas.`,
+        evidence:`Locals in Tenderloin reported minimal improvement even after 15 months of DMACC crackdown (SF Standard, Aug 2024). Drug offense rate rose 54% citywide in 2025 vs 2024 despite concentrated Tenderloin enforcement. SF drug offense rate +121% vs 2019 — highest among 19 US cities.`},
+       {id:'i72', title:'Nighttime Enforcement Gap', type:'Regulation & Public Policy',
+        desc:`DMACC operations historically peaked during daytime hours with enforcement near-absent after midnight, creating predictable windows during which drug markets operated freely.`,
+        why:`Drug dealing and public use that migrates to nighttime hours enables markets to persist even under heavy daytime enforcement, prolonging community harm.`,
+        evidence:`SF Standard analysis: drug arrests in Tenderloin plummeted after midnight under DMACC. Enforcement peaked 1–2 p.m. daily; near-zero by 4 a.m. Mayor Lurie expanded DMACC to 24/7 operations in early 2025 citing this gap.`},
+      ]
+     },
+     {
+      id:'pa25', label:'Community & Economic Impact', color:'#00C853',
+      issues:[
+       {id:'i73', title:'Resident & Worker Safety Fears', type:'Resident Behaviour',
+        desc:`Residents, workers, and visitors in drug-market neighborhoods — especially low-income families and immigrants — experience daily exposure to drug use, violence, and criminal activity that makes ordinary life unsafe.`,
+        why:`Living near open-air drug markets has documented psychological, physical, and economic effects. Families avoid streets, businesses lose staff and customers, and vulnerable residents (children, seniors) face direct exposure to needles and drug-use paraphernalia.`,
+        evidence:`Two hotels and residents sued the city in March 2024, calling the Tenderloin a 'containment zone for rampant illegal drug use.' 45% of SF residents victimized by theft in past 5 years; 24% by violence threats. Street ambassador fatally shot in July 2025 after asking a man to stop using drugs outside a Civic Center library.`},
+       {id:'i74', title:'Economic & Business Harm', type:'Urban Landscape & Geography',
+        desc:`The concentration of open-air drug markets in central SF neighborhoods has driven away businesses, deterred investment, and suppressed downtown economic recovery following COVID-19.`,
+        why:`Business closures reduce tax revenues, eliminate jobs in affected neighborhoods, and create feedback loops where vacancy increases fear and attracts more drug market activity — accelerating urban economic decline.`,
+        evidence:`Mid-Market Whole Foods closed April 2023 citing employee safety concerns from nearby drug markets. SF had slowest downtown COVID-19 recovery of any major US city. Tenderloin businesses unable to recruit staff due to safety environment.`},
+      ]
+     },
+    ]
+   },
+   {
+    id:'d8', label:'Retail Theft & Fencing of Stolen Goods', color:'#69F0AE',
+    evidence:`13,540 ORT (organized retail thefts) reports (2019–Apr 2023); $13.3M direct losses; +29% ORT (2020–2022); Union Square vacancy 20.6% Q1 2024; $6.4M theft losses 2023. Economic devastation: Theft-linked store closures created a doom loop in downtown SF, pushing Union Square's vacancy rate to a record 20.6% in Q1 2024 — more than double the national rate of 4%.`,
+    problemAreas:[
+     {
+      id:'pa26', label:'Organized Retail Crime (ORC) Networks', color:'#69F0AE',
+      issues:[
+       {id:'i75', title:'Coordinated Smash-and-Grab & Group Shoplifting', type:'Resident Behaviour',
+        desc:`Criminal organizations deploy coordinated teams to rapidly strip merchandise, sometimes in groups of 10–80 people, overwhelming store security before police respond.`,
+        why:`Individual employees cannot safely intervene; security costs become prohibitive; high-profile incidents (Neiman Marcus, Louis Vuitton, Target) generated national media coverage that damaged SF's reputation and chilled retail investment.`,
+        evidence:`SFPD ORT baseline: 2,636 organized retail theft incidents (2020) → 3,718 (2022), a 29% increase. 43% of organized retail theft concentrated in Union Square. Target CEO: 'unacceptable amount of retail theft and organized retail crime' — 9 SF/Oakland stores closed Sept 2023. Walgreens: theft 4× national average; security costs 35× national average at some SF stores.`},
+       {id:'i76', title:'Recidivist / Repeat Offenders', type:'Resident Behaviour',
+        desc:`A small number of prolific serial offenders account for a disproportionate share of all retail theft incidents — repeatedly cycling through citation release without meaningful consequences.`,
+        why:`Without felony-level consequences for repeat offenders, theft becomes a low-risk business. 10% of offenders account for 68% of total theft event value.`,
+        evidence:`10% of offenders account for 68% of total reported theft event value (Auror / NRF). SFPD: 238 repeat shoplifting offenders tracked in 2018; 219 in 2019; re-arrest rates only 20–29%. Pre-Prop 36: repeat offenders stealing <$950 per incident could not be charged with a felony regardless of total theft volume. Prop 36 (Nov 2024, 69% voter approval): third theft offense is now a felony.`},
+      ]
+     },
+     {
+      id:'pa27', label:'Fencing Networks & the Stolen Goods Economy', color:'#69F0AE',
+      issues:[
+       {id:'i77', title:'Open-Air Street Fencing Markets', type:'Technology & Infrastructure',
+        desc:`Stolen goods are sold openly in street vendor markets along Mission Street, UN Plaza, and other corridors, providing near-immediate cash conversion for shoplifters.`,
+        why:`Open-air fencing creates a visible, accessible market that directly incentivizes theft by guaranteeing quick cash for stolen goods — while degrading neighborhoods, displacing legitimate street vendors, and creating unsafe sidewalk conditions.`,
+        evidence:`Mid-Market fencing 'fuels organized retail theft when thieves convert stolen property to cash, directly incentivizing further theft' (SFPD ORT Evaluation Plan). Central Police District: $3.5M in stolen property reported since 2023.`},
+       {id:'i78', title:'Online Marketplace Fencing', type:'Technology & Infrastructure',
+        desc:`Organized theft rings use major e-commerce platforms (eBay, Amazon, Craigslist, Facebook Marketplace) to resell SF retail stolen goods nationally at scale.`,
+        why:`Online fencing dramatically expands the market for stolen goods beyond local buyers, makes theft more profitable, enables criminal networks to operate geographically separate from the crime, and is difficult for local law enforcement to trace and prosecute.`,
+        evidence:`Senate Judiciary Committee: $500B+ in stolen and counterfeit goods sold online globally per year. CHP 2024: leader of ring that stole $8M in beauty products across CA convicted — resold on own Amazon marketplace.`},
+      ]
+     },
+     {
+      id:'pa28', label:'Economic & Community Impact', color:'#69F0AE',
+      issues:[
+       {id:'i79', title:'Retail Business Exodus & Downtown Vacancy', type:'Urban Landscape & Geography',
+        desc:`High-profile chain store closures — driven by retail theft, employee safety concerns, remote work, and rising costs — left Union Square and downtown SF with record-high vacancies.`,
+        why:`Empty storefronts create physical and psychological blight: they deter shoppers, reduce foot traffic sustaining adjacent businesses, cut city tax revenues, and signal to prospective retailers that SF is not viable.`,
+        evidence:`Union Square vacancy: 20.6% in Q1 2024 — record high; national rate was 4%. Union Square operating stores: 207 (2019) → 107 by 2023 — 48% reduction. Westfield SF Centre: ~95% vacant by 2025. SF Centre sales: $455M (2019) → $298M (2022) — 34% collapse.`},
+       {id:'i80', title:'Worker Safety & Security Cost Escalation', type:'Resident Behaviour',
+        desc:`Retail workers — particularly in pharmacy chains, grocery stores, and convenience stores — face escalating risks of confrontation, assault, and intimidation from shoplifters and organized theft teams.`,
+        why:`Worker safety concerns force retailers to bear massive security costs, reduce store hours, lock up merchandise (degrading customer experience), or exit the market entirely.`,
+        evidence:`Walgreens: security costs 35× national average at some SF stores; theft rate 4× national average. 73% of retailers nationally report shoplifters becoming more aggressive and violent (NRF 2023). United Food & Commercial Workers Union: rapid increase in retail theft has created 'a workplace safety crisis.'`},
+       {id:'i81', title:'Perception Damage & Tourism Deterrence', type:'Urban Landscape & Geography',
+        desc:`Viral social media videos and national news coverage of SF retail theft created lasting reputational damage that deterred shoppers, tourists, and potential tenants — even as actual theft rates declined in 2023–2024.`,
+        why:`Perception lags reality in urban retail recovery. The reputational harm from 2021–2022 incidents continued suppressing Union Square foot traffic and visitor spending into 2024.`,
+        evidence:`Union Square foot traffic down 45% from pre-pandemic levels as of October 2023 (CBRE analysis). SF Centre visitor count: ~10M (2019) → 5.6M (2022) — nearly halved. SF had slowest downtown COVID-19 recovery of any major US city.`},
+      ]
+     },
+    ]
+   },
+  ]
+ },
+];
+
+// Cross-challenge connections
+const CROSS = [
+ {s:'i9', t:'i51', label:'Encampment waste drives homelessness inflow crisis'},
+ {s:'i10', t:'i51', label:'No public restrooms → forced street living'},
+ {s:'i49', t:'i67', label:'Same fentanyl crisis viewed from different systems'},
+ {s:'i49', t:'i68', label:'Addiction without treatment capacity = open street use'},
+ {s:'i51', t:'i9', label:'Homelessness growth causes encampment waste'},
+ {s:'i60', t:'i67', label:'Racial overdose disparity intersects with drug crisis'},
+ {s:'i65', t:'i49', label:'Drug supply chain feeds addiction & homelessness'},
+ {s:'i70', t:'i72', label:'Officer shortage directly causes nighttime enforcement gap'},
+ {s:'i71', t:'i5', label:'Drug market displacement increases citywide cleaning burden'},
+ {s:'i79', t:'i27', label:'Business exodus deepens neighborhood inequality'},
+];
+
+// ════════════════════════════════════════════════════════
+// LAYOUT COMPUTATION
+// ════════════════════════════════════════════════════════
+const COL = { ch:0, dim:240, pa:440, issue:640 };
+const GAP = { ch:60, dim:30, pa:20, issue:8 };
+const H   = { ch:160, dim:90, pa:70, issue:100 };
+
+let allNodes = [], allLinks = [], nodeMap = {};
+
+function buildLayout() {
+  allNodes=[]; allLinks=[]; nodeMap={};
+  let chY = 80;
+
+  CHALLENGES.forEach(ch => {
+    // count total issue height for this challenge
+    let chH = 0;
+    ch.dimensions.forEach(dim => {
+      let dimH = 0;
+      dim.problemAreas.forEach(pa => {
+        dimH += pa.issues.length * (H.issue + GAP.issue) + GAP.pa;
+      });
+      dimH = Math.max(dimH, H.dim);
+      chH += dimH + GAP.dim;
+    });
+    chH = Math.max(chH, H.ch);
+
+    const chNode = { id:ch.id, type:'challenge', data:ch, color:ch.color,
+      x:COL.ch, y:chY + chH/2, h:chH };
+    allNodes.push(chNode); nodeMap[ch.id]=chNode;
+
+    let dimY = chY;
+    ch.dimensions.forEach(dim => {
+      let dimH = 0;
+      dim.problemAreas.forEach(pa => {
+        dimH += pa.issues.length * (H.issue + GAP.issue) + GAP.pa;
+      });
+      dimH = Math.max(dimH, H.dim);
+
+      const dimNode = { id:dim.id, type:'dimension', data:dim, color:dim.color,
+        x:COL.dim, y:dimY + dimH/2, h:dimH, chId:ch.id };
+      allNodes.push(dimNode); nodeMap[dim.id]=dimNode;
+      allLinks.push({s:ch.id, t:dim.id, type:'hier', color:ch.color});
+
+      let paY = dimY;
+      dim.problemAreas.forEach(pa => {
+        const paH = pa.issues.length * (H.issue + GAP.issue);
+        const paNode = { id:pa.id, type:'pa', data:pa, color:pa.color,
+          x:COL.pa, y:paY + paH/2, h:paH, chId:ch.id };
+        allNodes.push(paNode); nodeMap[pa.id]=paNode;
+        allLinks.push({s:dim.id, t:pa.id, type:'hier', color:dim.color});
+
+        pa.issues.forEach((issue, ii) => {
+          const issueNode = { id:issue.id, type:'issue', data:issue, color:pa.color,
+            x:COL.issue, y:paY + ii*(H.issue+GAP.issue) + H.issue/2,
+            chId:ch.id };
+          allNodes.push(issueNode); nodeMap[issue.id]=issueNode;
+          allLinks.push({s:pa.id, t:issue.id, type:'hier', color:pa.color});
+        });
+
+        paY += paH + GAP.pa;
+      });
+
+      dimY += dimH + GAP.dim;
+    });
+
+    chY += chH + GAP.ch;
+  });
+
+  // Cross links
+  CROSS.forEach((cx,i) => {
+    if(nodeMap[cx.s] && nodeMap[cx.t])
+      allLinks.push({s:cx.s, t:cx.t, type:'cross', label:cx.label});
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════
+const world = document.getElementById('world');
+const svg = document.getElementById('tree-svg');
+let domNodes = {}; // id → DOM element
+
+function render() {
+  world.innerHTML = '';
+  domNodes = {};
+  buildLayout();
+
+  const maxY = Math.max(...allNodes.map(n=>n.y+(n.h||H.issue)/2)) + 80;
+  const maxX = COL.issue + 260;
+  svg.setAttribute('width', maxX);
+  svg.setAttribute('height', maxY);
+  world.style.width = maxX+'px';
+  world.style.height = maxY+'px';
+  world.appendChild(svg);
+
+  // Column headers
+  [['CHALLENGE', COL.ch+84], ['DIMENSION', COL.dim+66], ['PROBLEM AREA', COL.pa+59], ['SPECIFIC ISSUE', COL.issue+110]].forEach(([lbl,cx])=>{
+    const d=document.createElement('div');
+    d.className='col-hdr';
+    d.style.left=cx+'px'; d.style.top='14px';
+    d.textContent=lbl;
+    world.appendChild(d);
+  });
+
+  // SVG links
+  svg.innerHTML='';
+  allLinks.forEach(link=>{
+    const sn=nodeMap[link.s], tn=nodeMap[link.t];
+    if(!sn||!tn) return;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    const x1=sn.x+(sn.type==='challenge'?168:sn.type==='dimension'?132:sn.type==='pa'?118:0);
+    const y1=sn.y;
+    const x2=tn.x; const y2=tn.y;
+    const mx=(x1+x2)/2;
+    path.setAttribute('d',`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+    path.setAttribute('data-s',link.s); path.setAttribute('data-t',link.t);
+    if(link.type==='cross'){
+      path.setAttribute('class','link link-cross');
+    } else {
+      path.setAttribute('class','link link-hier');
+      path.setAttribute('stroke', link.color||'#fff');
+    }
+    svg.appendChild(path);
+  });
+
+  // Nodes
+  allNodes.forEach((n,idx)=>{
+    let el;
+    if(n.type==='challenge') el = makeChallengeCard(n);
+    else if(n.type==='dimension') el = makeDimCard(n);
+    else if(n.type==='pa') el = makePACard(n);
+    else el = makeIssueCard(n);
+
+    el.style.left = n.x + 'px';
+    el.style.top = n.y + 'px';
+    el.style.animationDelay = (idx*4)+'ms';
+    world.appendChild(el);
+    domNodes[n.id] = el;
+  });
+}
+
+function makeChallengeCard(n) {
+  const d=n.data;
+  const el=document.createElement('div');
+  el.className='ch-card'; el.id='nd-'+n.id;
+  el.style.borderColor=d.color;
+  el.style.boxShadow=`0 0 32px ${d.color}18`;
+  el.innerHTML=`
+    <div class="ch-top">
+      <div class="ch-num" style="color:${d.color}">CHALLENGE ${CHALLENGES.indexOf(d)+1}</div>
+      <div class="ch-title">${d.label}</div>
+      <div class="ch-desc">${d.desc.slice(0,120)}…</div>
+    </div>
+    <div class="ch-bottom">
+      <div class="ch-stat"><span class="ch-stat-n" style="color:${d.color}">${d.statDim}</span><span class="ch-stat-l">Dimensions</span></div>
+      <div class="ch-stat"><span class="ch-stat-n" style="color:${d.color}">${d.statPA}</span><span class="ch-stat-l">Prob. Areas</span></div>
+      <div class="ch-stat"><span class="ch-stat-n" style="color:${d.color}">${d.statIssues}</span><span class="ch-stat-l">Issues</span></div>
+    </div>`;
+  el.addEventListener('click', e=>{e.stopPropagation(); openDetail(n); highlightNode(n.id);});
+  el.addEventListener('mouseenter', e=>showTip(d.label, 'Grand Challenge', d.desc.slice(0,160)+'…', e));
+  el.addEventListener('mouseleave', hideTip);
+  return el;
+}
+
+function makeDimCard(n) {
+  const d=n.data;
+  const issueCount = d.problemAreas.reduce((a,pa)=>a+pa.issues.length,0);
+  const el=document.createElement('div');
+  el.className='dim-card'; el.id='nd-'+n.id;
+  el.style.borderColor=d.color+'55';
+  el.innerHTML=`
+    <div class="dim-label" style="color:${d.color}">Dimension</div>
+    <div class="dim-title">${d.label}</div>
+    <div class="dim-count">${d.problemAreas.length} areas · ${issueCount} issues</div>`;
+  el.addEventListener('click', e=>{e.stopPropagation(); openDetail(n); highlightNode(n.id);});
+  el.addEventListener('mouseenter', e=>showTip(d.label, 'Challenge Dimension', d.evidence?d.evidence.slice(0,160)+'…':'', e));
+  el.addEventListener('mouseleave', hideTip);
+  return el;
+}
+
+function makePACard(n) {
+  const d=n.data;
+  const el=document.createElement('div');
+  el.className='pa-card'; el.id='nd-'+n.id;
+  el.innerHTML=`
+    <div class="pa-bar" style="background:${d.color}"></div>
+    <div class="pa-title">${d.label}</div>
+    <div class="pa-count">${d.issues.length} issue${d.issues.length!==1?'s':''}</div>`;
+  el.addEventListener('click', e=>{e.stopPropagation(); openDetail(n); highlightNode(n.id);});
+  el.addEventListener('mouseenter', e=>showTip(d.label, 'Problem Area', `${d.issues.length} specific issues in this area`, e));
+  el.addEventListener('mouseleave', hideTip);
+  return el;
+}
+
+function makeIssueCard(n) {
+  const d=n.data;
+  const el=document.createElement('div');
+  el.className='issue-card'; el.id='nd-'+n.id;
+  el.innerHTML=`
+    <div class="issue-accent" style="background:${n.color}"></div>
+    <div class="issue-body">
+      ${d.type ? `<div class="issue-type" style="color:${n.color}">${d.type}</div>` : ''}
+      <div class="issue-title">${d.title}</div>
+    </div>
+    <div class="issue-extra" id="ex-${d.id}">
+      ${d.desc ? `<div class="ex-label">Description</div><div class="ex-text">${d.desc}</div>` : ''}
+      ${d.why ? `<div class="ex-label">Why is this a problem?</div><div class="ex-text">${d.why}</div>` : ''}
+      ${d.evidence ? `<div class="ex-label">Evidence</div><div class="ex-evidence">${d.evidence}</div>` : ''}
+    </div>`;
+  el.addEventListener('click', e=>{
+    e.stopPropagation();
+    const ex = el.querySelector('.issue-extra');
+    const wasOpen = ex.classList.contains('open');
+    // Close all others
+    document.querySelectorAll('.issue-extra.open').forEach(x=>x.classList.remove('open'));
+    if(!wasOpen) ex.classList.add('open');
+    openDetail(n);
+    highlightNode(n.id);
+  });
+  el.addEventListener('mouseenter', e=>showTip(d.title, d.type||'Specific Issue', d.desc?d.desc.slice(0,160)+'…':'Click to expand', e));
+  el.addEventListener('mouseleave', hideTip);
+  return el;
+}
+
+// ════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ════════════════════════════════════════════════════════
+function openDetail(n) {
+  const det=document.getElementById('detail');
+  const acc=document.getElementById('detAccent');
+  const inner=document.getElementById('detInner');
+  acc.style.background = n.color;
+
+  let html='';
+  if(n.type==='challenge') {
+    const d=n.data;
+    html=`
+      <div class="det-overline" style="color:${d.color}">Grand Challenge ${CHALLENGES.indexOf(d)+1}</div>
+      <div class="det-title">${d.label}</div>
+      <div class="det-section"><div class="det-sec-label">How Might We…</div><div class="det-text" style="font-style:italic">${d.hmw}</div></div>
+      <div class="det-section"><div class="det-sec-label">Why This Matters</div><div class="det-text">${d.desc}</div></div>
+      <div class="det-section"><div class="det-sec-label">Scale</div>
+        <div style="display:flex;gap:16px;margin-top:6px">
+          <div class="ch-stat"><span class="ch-stat-n" style="color:${d.color};font-size:20px">${d.statDim}</span><span class="ch-stat-l">Dimensions</span></div>
+          <div class="ch-stat"><span class="ch-stat-n" style="color:${d.color};font-size:20px">${d.statPA}</span><span class="ch-stat-l">Problem Areas</span></div>
+          <div class="ch-stat"><span class="ch-stat-n" style="color:${d.color};font-size:20px">${d.statIssues}</span><span class="ch-stat-l">Issues</span></div>
+        </div>
+      </div>`;
+  } else if(n.type==='dimension') {
+    const d=n.data;
+    html=`
+      <div class="det-overline" style="color:${d.color}">Challenge Dimension</div>
+      <div class="det-title">${d.label}</div>
+      ${d.evidence?`<div class="det-section"><div class="det-sec-label">Evidence</div><div class="det-text">${d.evidence}</div></div>`:''}`;
+  } else if(n.type==='pa') {
+    const d=n.data;
+    html=`
+      <div class="det-overline" style="color:${d.color}">Problem Area</div>
+      <div class="det-title">${d.label}</div>
+      <div class="det-section"><div class="det-sec-label">Issues in this area (${d.issues.length})</div>
+        ${d.issues.map(i=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted2)">${i.title}</div>`).join('')}
+      </div>`;
+  } else {
+    const d=n.data;
+    html=`
+      <div class="det-overline" style="color:${n.color}">${d.type||'Specific Issue'}</div>
+      <div class="det-title">${d.title}</div>
+      ${d.desc?`<div class="det-section"><div class="det-sec-label">What is this issue?</div><div class="det-text">${d.desc}</div></div>`:''}
+      ${d.why?`<div class="det-section"><div class="det-sec-label">Why is this a problem?</div><div class="det-text">${d.why}</div></div>`:''}
+      ${d.evidence?`<div class="det-section"><div class="det-sec-label">Evidence & Data</div><div class="det-text" style="font-style:italic">${d.evidence}</div></div>`:''}`;
+  }
+
+  inner.innerHTML=html;
+  det.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail').classList.remove('open');
+  clearHighlight();
+}
+
+// ════════════════════════════════════════════════════════
+// HIGHLIGHT
+// ════════════════════════════════════════════════════════
+let activeId = null;
+
+function highlightNode(id) {
+  activeId = id;
+  const connected = new Set([id]);
+  allLinks.forEach(l=>{
+    if(l.s===id) connected.add(l.t);
+    if(l.t===id) connected.add(l.s);
+  });
+  // Walk up hierarchy
+  function up(i){ allLinks.forEach(l=>{ if(l.t===i && l.type==='hier'){ connected.add(l.s); up(l.s); } }); }
+  up(id);
+
+  Object.entries(domNodes).forEach(([nid,el])=>{
+    el.classList.toggle('dim', !connected.has(nid));
+    el.classList.toggle('lit', connected.has(nid));
+  });
+  svg.querySelectorAll('.link').forEach(l=>{
+    const ls=l.getAttribute('data-s'), lt=l.getAttribute('data-t');
+    const hit=connected.has(ls)&&connected.has(lt);
+    l.classList.toggle('dim', !hit);
+    l.classList.toggle('lit', hit);
+  });
+}
+
+function clearHighlight() {
+  activeId=null;
+  Object.values(domNodes).forEach(el=>{ el.classList.remove('dim','lit'); });
+  svg.querySelectorAll('.link').forEach(l=>{ l.classList.remove('dim','lit'); });
+}
+
+// ════════════════════════════════════════════════════════
+// TOOLTIP
+// ════════════════════════════════════════════════════════
+const tip=document.getElementById('tip');
+function showTip(name, type, desc, e) {
+  document.getElementById('tipType').textContent=type;
+  document.getElementById('tipType').style.color=e.currentTarget.style.borderColor||'#888';
+  document.getElementById('tipName').textContent=name;
+  document.getElementById('tipDesc').textContent=desc;
+  tip.classList.add('on');
+  moveTip(e);
+}
+function hideTip() { tip.classList.remove('on'); }
+document.addEventListener('mousemove', e=>{ if(tip.classList.contains('on')) moveTip(e); });
+function moveTip(e) {
+  let x=e.clientX+14, y=e.clientY-8;
+  if(x+300>window.innerWidth) x=e.clientX-314;
+  if(y+140>window.innerHeight) y=e.clientY-148;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+
+// ════════════════════════════════════════════════════════
+// PAN / ZOOM
+// ════════════════════════════════════════════════════════
+let sx=1, tx=0, ty=0, dragging=false, lx=0, ly=0;
+const canvas=document.getElementById('canvas');
+
+function applyT() {
+  world.style.transform=`translate(${tx}px,${ty}px) scale(${sx})`;
+  document.getElementById('zoomBadge').textContent=Math.round(sx*100)+'%';
+  const ov=document.getElementById('overview');
+  ov.classList.toggle('hidden', sx>0.65);
+}
+
+function zoomBy(f) {
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const cx=vw/2, cy=vh/2;
+  const ns=Math.max(0.12,Math.min(3,sx*f));
+  tx=cx-(cx-tx)*(ns/sx); ty=cy-(cy-ty)*(ns/sx); sx=ns;
+  applyT();
+}
+
+function home() {
+  closeDetail();
+  clearHighlight();
+  filterChallenge('all');
+  const vw=window.innerWidth, vh=window.innerHeight-96;
+  const maxY=Math.max(...allNodes.map(n=>n.y+(n.h||H.issue)/2))+80;
+  const maxX=COL.issue+280;
+  const fs=Math.min(vw/(maxX+60), vh/(maxY+60), 0.38);
+  const ftx=(vw-maxX*fs)/2;
+  const fty=(vh-maxY*fs)/2+96;
+  animTo(fs,ftx,fty);
+  document.getElementById('crumb').innerHTML=`<span class="active" onclick="home()">System Map</span>`;
+}
+
+function focusChallenge(cid) {
+  const n=nodeMap[cid];
+  if(!n) return;
+  const vw=window.innerWidth, vh=window.innerHeight-96;
+  const ns=0.55;
+  const ntx=vw/2 - n.x*ns - 84*ns;
+  const nty=vh/2 - n.y*ns + 96;
+  animTo(ns, ntx, nty);
+  highlightNode(cid);
+}
+
+let raf;
+function animTo(ns,ntx,nty) {
+  cancelAnimationFrame(raf);
+  const [ss,stx,sty]=[sx,tx,ty];
+  const dur=450, t0=performance.now();
+  function step(now) {
+    const p=Math.min((now-t0)/dur,1), e=1-Math.pow(1-p,3);
+    sx=ss+(ns-ss)*e; tx=stx+(ntx-stx)*e; ty=sty+(nty-sty)*e;
+    applyT();
+    if(p<1) raf=requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+canvas.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const f=e.deltaY<0?1.1:0.91;
+  const rect=canvas.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const ns=Math.max(0.12,Math.min(3,sx*f));
+  tx=mx-(mx-tx)*(ns/sx); ty=my-(my-ty)*(ns/sx); sx=ns;
+  applyT();
+},{passive:false});
+
+canvas.addEventListener('mousedown', e=>{ dragging=true; lx=e.clientX; ly=e.clientY; canvas.classList.add('grabbing'); });
+window.addEventListener('mousemove', e=>{ if(!dragging) return; tx+=e.clientX-lx; ty+=e.clientY-ly; lx=e.clientX; ly=e.clientY; applyT(); });
+window.addEventListener('mouseup', ()=>{ dragging=false; canvas.classList.remove('grabbing'); });
+
+canvas.addEventListener('click', e=>{
+  if(e.target===canvas||e.target===world||e.target===svg) { clearHighlight(); }
+});
+
+// Nav tabs + filter
+function filterChallenge(cid) {
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active', t.dataset.ch===cid));
+  if(cid==='all') {
+    Object.values(domNodes).forEach(el=>{ el.classList.remove('dim','lit'); });
+    svg.querySelectorAll('.link').forEach(l=>{ l.classList.remove('dim','lit'); });
+    activeId=null;
+  } else {
+    // Show only that challenge subtree
+    const connected=new Set();
+    allNodes.forEach(n=>{ if(n.chId===cid||n.id===cid) connected.add(n.id); });
+    Object.entries(domNodes).forEach(([nid,el])=>{
+      el.classList.toggle('dim', !connected.has(nid));
+      el.classList.toggle('lit', connected.has(nid));
+    });
+    svg.querySelectorAll('.link').forEach(l=>{
+      const ls=l.getAttribute('data-s'), lt=l.getAttribute('data-t');
+      l.classList.toggle('dim', !(connected.has(ls)&&connected.has(lt)));
+    });
+    focusChallenge(cid);
+    const ch=CHALLENGES.find(c=>c.id===cid);
+    document.getElementById('crumb').innerHTML=`<span onclick="home()" style="cursor:pointer">System Map</span><span class="arr"> › </span><span class="active">${ch.short}</span>`;
+  }
+}
+
+window.addEventListener('keydown', e=>{
+  if(e.key==='+') zoomBy(1.2);
+  if(e.key==='-') zoomBy(0.83);
+  if(e.key==='Escape') { home(); closeDetail(); hideTip(); }
+});
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+render();
+home();
+</script>
+</body>
+</html>

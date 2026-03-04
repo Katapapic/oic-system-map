@@ -307,31 +307,31 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
 
   <div class="sb-section">
     <div class="sb-section-label">Challenges</div>
-    <div class="sb-item" onclick="scrollTo('sec-c1')">
+    <div class="sb-item" onclick="navTo('sec-c1')">
       <span class="icon">🟠</span>
       <span class="label">Clean & Safe Spaces</span>
     </div>
     <div class="sb-sub">
-      <div class="sb-item" onclick="scrollTo('sec-clean-spaces')"><span class="icon">·</span><span class="label">Clean Spaces</span></div>
-      <div class="sb-item" onclick="scrollTo('sec-beautiful')"><span class="icon">·</span><span class="label">Beautiful Spaces</span></div>
-      <div class="sb-item" onclick="scrollTo('sec-welcoming')"><span class="icon">·</span><span class="label">Welcoming Spaces</span></div>
-      <div class="sb-item" onclick="scrollTo('sec-safe-spaces')"><span class="icon">·</span><span class="label">Safe Spaces</span></div>
+      <div class="sb-item" onclick="navTo('sec-clean-spaces')"><span class="icon">·</span><span class="label">Clean Spaces</span></div>
+      <div class="sb-item" onclick="navTo('sec-beautiful')"><span class="icon">·</span><span class="label">Beautiful Spaces</span></div>
+      <div class="sb-item" onclick="navTo('sec-welcoming')"><span class="icon">·</span><span class="label">Welcoming Spaces</span></div>
+      <div class="sb-item" onclick="navTo('sec-safe-spaces')"><span class="icon">·</span><span class="label">Safe Spaces</span></div>
     </div>
-    <div class="sb-item" onclick="scrollTo('sec-c2')">
+    <div class="sb-item" onclick="navTo('sec-c2')">
       <span class="icon">🔵</span>
       <span class="label">Health & Homelessness</span>
     </div>
     <div class="sb-sub">
-      <div class="sb-item" onclick="scrollTo('sec-breaking')"><span class="icon">·</span><span class="label">Breaking the Cycle</span></div>
-      <div class="sb-item" onclick="scrollTo('sec-health-disp')"><span class="icon">·</span><span class="label">Health Disparities</span></div>
+      <div class="sb-item" onclick="navTo('sec-breaking')"><span class="icon">·</span><span class="label">Breaking the Cycle</span></div>
+      <div class="sb-item" onclick="navTo('sec-health-disp')"><span class="icon">·</span><span class="label">Health Disparities</span></div>
     </div>
-    <div class="sb-item" onclick="scrollTo('sec-c3')">
+    <div class="sb-item" onclick="navTo('sec-c3')">
       <span class="icon">🟢</span>
       <span class="label">Keep City Safe</span>
     </div>
     <div class="sb-sub">
-      <div class="sb-item" onclick="scrollTo('sec-drug-markets')"><span class="icon">·</span><span class="label">Drug Markets</span></div>
-      <div class="sb-item" onclick="scrollTo('sec-retail-theft')"><span class="icon">·</span><span class="label">Retail Theft</span></div>
+      <div class="sb-item" onclick="navTo('sec-drug-markets')"><span class="icon">·</span><span class="label">Drug Markets</span></div>
+      <div class="sb-item" onclick="navTo('sec-retail-theft')"><span class="icon">·</span><span class="label">Retail Theft</span></div>
     </div>
   </div>
 </div>
@@ -777,7 +777,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); display
 </div><!-- end main -->
 
 <script>
-function scrollTo(id) {
+function navTo(id) {
   const el = document.getElementById(id);
   if (!el) return;
   // Open parent challenge if collapsed

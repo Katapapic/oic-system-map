@@ -124,6 +124,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .lvl1-row:hover > td > .cell-actions{background:#FAFAFA;}
 .lvl2-row > td{background:#F9F9F7;}
 .lvl2-row:hover > td{background:#F2F2F0;}
+.lvl1-row{cursor:pointer;}
+.lvl2-row{cursor:pointer;}
 .lvl3-row > td{background:#F5F5F3;cursor:pointer;}
 .lvl3-row:hover > td{background:#EEF5FF;}
 .lvl3-row:hover .t-issue{color:#337EA9;text-decoration:underline;}
@@ -254,7 +256,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
         <th>Challenge Dimension</th><th>Summary</th><th>Actions</th>
       </tr></thead>
       <tbody>
-      <tr class="lvl1-row" id="dim-clean_spaces">
+      <tr class="lvl1-row" onclick="toggleRows('dim-clean_spaces-body')" style="cursor:pointer" id="dim-clean_spaces">
         <td><div class="cell-name"><span class="dot1" style="background:#D44C47"></span><span class="t-bold">Clean Spaces</span></div></td>
         <td><div class="cell-summary"><span>SF spends $60 per capita on street cleaning — 3× more than LA — yet 89% of streets show graffiti and 30% have feces. The budget grew 63% since 2018 with no measurable improvement in outcomes.</span></div></td>
         <td><div class="cell-actions">
@@ -270,8 +272,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Garbage Infrastructure &amp; Waste Containment:</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-clean_spaces-0-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Garbage Infrastructure &amp; Waste Containment:</span></div></td>
                 <td><div class="cell-summary"><span>Waste containment infrastructure has severe gaps: missing trash cans across multiple blocks, existing bins overflow without adequate emptying frequency, and illegal dumping costs $7.4M per year.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(0)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -310,8 +312,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Operational Inefficiency and lack of processes</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-clean_spaces-1-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Operational Inefficiency and lack of processes</span></div></td>
                 <td><div class="cell-summary"><span>SF measures cleaning activities — hours worked, routes completed — but doesn't evaluate whether those activities produce clean streets. Performance goals have grown increasingly vague since 2015.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(1)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -350,8 +352,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Fecal Contamination &amp; Public Sanitation</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-clean_spaces-2-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Fecal Contamination &amp; Public Sanitation</span></div></td>
                 <td><div class="cell-summary"><span>SF faces a sanitation crisis: 30% of streets had feces in FY2024, the Pit Stop program was drastically cut, and sidewalk samples detected dangerous human pathogens.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(2)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -385,8 +387,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Graffiti &amp; Visual Blight</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-clean_spaces-3-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Graffiti &amp; Visual Blight</span></div></td>
                 <td><div class="cell-summary"><span>89% of SF streets have graffiti in FY2024-25, averaging 23 instances per surveyed block — worse than the prior year. The free removal program issued ~900 notices in its first year.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(3)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -414,7 +416,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
           </table>
         </td>
       </tr>
-      <tr class="lvl1-row" id="dim-welcoming___accesible">
+      <tr class="lvl1-row" onclick="toggleRows('dim-welcoming___accesible-body')" style="cursor:pointer" id="dim-welcoming___accesible">
         <td><div class="cell-name"><span class="dot1" style="background:#D44C47"></span><span class="t-bold">Welcoming &amp; Accesible Spaces</span></div></td>
         <td><div class="cell-summary"><span>SF's public spaces face barriers that prevent low-income families and immigrant communities from using them fully: infrastructure gaps, complex permitting, costs, and visible disorder.</span></div></td>
         <td><div class="cell-actions">
@@ -430,8 +432,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Physical Infrastructure &amp; Design Gaps</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-welcoming___accesible-4-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Physical Infrastructure &amp; Design Gaps</span></div></td>
                 <td><div class="cell-summary"><span>SF parks score 91% on general maintenance, but a well-maintained park is not the same as a usable park. There is $1B+ in deferred maintenance and serious ADA compliance gaps.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(4)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -465,8 +467,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Programming, Activation &amp; Cultural Barriers</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-welcoming___accesible-5-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Programming, Activation &amp; Cultural Barriers</span></div></td>
                 <td><div class="cell-summary"><span>A well-maintained park that offers no relevant programming is a missed opportunity. Permitting barriers, costs, and language exclusions systematically shut out the communities that most need parks.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(5)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -500,8 +502,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Safety Conditions That Deter Family Use</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-welcoming___accesible-6-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Safety Conditions That Deter Family Use</span></div></td>
                 <td><div class="cell-summary"><span>A park can score well on maintenance and still be avoided by families if there is visible drug use near playgrounds, insufficient lighting, or encampments.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(6)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -530,8 +532,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Governance, Accountability &amp; Fragmented Management</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-welcoming___accesible-7-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Governance, Accountability &amp; Fragmented Management</span></div></td>
                 <td><div class="cell-summary"><span>SF park challenges are well-documented, but fragmented management across Rec & Park, Public Works, SFMTA, the Port, and the NPS creates incomplete feedback loops and unclear accountability.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(7)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -564,7 +566,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
           </table>
         </td>
       </tr>
-      <tr class="lvl1-row" id="dim-street_and_traffic_saf">
+      <tr class="lvl1-row" onclick="toggleRows('dim-street_and_traffic_saf-body')" style="cursor:pointer" id="dim-street_and_traffic_saf">
         <td><div class="cell-name"><span class="dot1" style="background:#D44C47"></span><span class="t-bold">Street and Traffic Safety</span></div></td>
         <td><div class="cell-summary"><span>SF adopted Vision Zero in 2014 with a goal of zero deaths by 2024. Result: 363 dead, serious injuries +33%, and 2024 had the most transit deaths since 2005. Pedestrians are 56% of victims.</span></div></td>
         <td><div class="cell-actions">
@@ -580,8 +582,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Dangerous Street Design:</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-street_and_traffic_saf-8-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Dangerous Street Design:</span></div></td>
                 <td><div class="cell-summary"><span>The physical geometry of SF streets — high-speed one-way streets, wide intersections, long crossing distances — is the primary driver of traffic deaths, more than individual behavior.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(8)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -615,8 +617,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Speeding &amp; Driver Behavior:</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-street_and_traffic_saf-9-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Speeding &amp; Driver Behavior:</span></div></td>
                 <td><div class="cell-summary"><span>Excessive speed is the leading cause of serious injuries and deaths on SF streets. SF has the highest volume of speeding of any city measured by its camera contractor.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(9)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -650,8 +652,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Vulnerable Road Users: Pedestrians, Seniors &amp; Cyclists</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-street_and_traffic_saf-10-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Vulnerable Road Users: Pedestrians, Seniors &amp; Cyclists</span></div></td>
                 <td><div class="cell-summary"><span>The human cost of SF's traffic safety failure falls disproportionately on those least protected: pedestrians (56% of 2024 deaths), older adults (38% of 2023 victims), and cyclists.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(10)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -689,7 +691,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
           </table>
         </td>
       </tr>
-      <tr class="lvl1-row" id="dim-safe_spaces">
+      <tr class="lvl1-row" onclick="toggleRows('dim-safe_spaces-body')" style="cursor:pointer" id="dim-safe_spaces">
         <td><div class="cell-name"><span class="dot1" style="background:#D44C47"></span><span class="t-bold">Safe Spaces</span></div></td>
         <td><div class="cell-summary"><span>SF crime statistics show historic improvement — crime -25–30% in 2024, homicides at a 70-year low — but most residents don't feel it. The perception-reality gap is the central challenge.</span></div></td>
         <td><div class="cell-actions">
@@ -705,8 +707,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Perception &amp; Narrative: The Safety Doom Loop</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-safe_spaces-11-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Perception &amp; Narrative: The Safety Doom Loop</span></div></td>
                 <td><div class="cell-summary"><span>SF has become a national symbol of progressive urban failure — a narrative amplified by viral videos, national political actors, and media that disproportionately covered the worst conditions.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(11)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -735,8 +737,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Visible Urban Disorder: Drug Markets, Overdoses &amp; Encampments</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-safe_spaces-12-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Visible Urban Disorder: Drug Markets, Overdoses &amp; Encampments</span></div></td>
                 <td><div class="cell-summary"><span>Even as measured crime falls, visible disorder — open drug use, public overdoses, encampments — signals loss of control of public space and suppresses community use.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(12)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -765,8 +767,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Actual Crime &amp; Enforcement Gaps</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-safe_spaces-13-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Actual Crime &amp; Enforcement Gaps</span></div></td>
                 <td><div class="cell-summary"><span>Specific enforcement gaps continue to undermine street-level safety: SFPD operates 500+ officers below the recommended minimum, property crime clearance rates are 8.7%, and repeat offenders cycle through.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(13)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -800,8 +802,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Accountability &amp; Institutional Trust</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-safe_spaces-14-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Accountability &amp; Institutional Trust</span></div></td>
                 <td><div class="cell-summary"><span>The deepest challenge to public safety is not the crime rate, which genuinely improved, but whether residents believe the city can respond effectively and whether communities of color trust the police.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(14)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -834,7 +836,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
           </table>
         </td>
       </tr>
-      <tr class="lvl1-row" id="dim-infrastructure_steward">
+      <tr class="lvl1-row" onclick="toggleRows('dim-infrastructure_steward-body')" style="cursor:pointer" id="dim-infrastructure_steward">
         <td><div class="cell-name"><span class="dot1" style="background:#D44C47"></span><span class="t-bold">Infrastructure Stewardship</span></div></td>
         <td><div class="cell-summary"><span>SF's deferred maintenance backlog grows more expensive every year investment is delayed. DPW manages $19B in assets with a $600M+ backlog, while an $817M structural deficit forces more capital cuts.</span></div></td>
         <td><div class="cell-actions">
@@ -850,8 +852,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Deferred Maintenance in Buildings, Streets &amp; Sidewalks</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-infrastructure_steward-15-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Deferred Maintenance in Buildings, Streets &amp; Sidewalks</span></div></td>
                 <td><div class="cell-summary"><span>SF's most tangible infrastructure challenge is an accumulated deferred maintenance backlog of $600M+, concentrated in public buildings, sidewalks, streets, and urban furniture managed by DPW.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(15)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -880,8 +882,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Seismic &amp; Climate Risk</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-infrastructure_steward-16-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Seismic &amp; Climate Risk</span></div></td>
                 <td><div class="cell-summary"><span>The Embarcadero Seawall is SF's most consequential infrastructure risk: 72% probability of M6.7+ earthquake before 2043, potential $30B in damages, and protecting $100B+ in assets and critical utility services.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(16)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -910,8 +912,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Aging Utility Systems: Water, Sewer &amp; Power</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-infrastructure_steward-17-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Aging Utility Systems: Water, Sewer &amp; Power</span></div></td>
                 <td><div class="cell-summary"><span>Below SF's streets runs an aging network of water mains, sewers, and power conduits that forms the city's basic services infrastructure. Parts are up to 100 years old.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(17)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -935,8 +937,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Governance, Transparency &amp; Fiscal Stewardship</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-infrastructure_steward-18-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Governance, Transparency &amp; Fiscal Stewardship</span></div></td>
                 <td><div class="cell-summary"><span>SF's infrastructure governance is fragmented across six major agencies with different funding cycles, making long-term asset maintenance accountability difficult.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(18)" style="border-color:#D44C47;color:#D44C47">View ↗</button>
@@ -991,7 +993,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
         <th>Challenge Dimension</th><th>Summary</th><th>Actions</th>
       </tr></thead>
       <tbody>
-      <tr class="lvl1-row" id="dim-breaking_the_cycle__ho">
+      <tr class="lvl1-row" onclick="toggleRows('dim-breaking_the_cycle__ho-body')" style="cursor:pointer" id="dim-breaking_the_cycle__ho">
         <td><div class="cell-name"><span class="dot1" style="background:#337EA9"></span><span class="t-bold">Breaking the Cycle (Homelessness)</span></div></td>
         <td><div class="cell-summary"><span>At any given time, 8,323 people experience homelessness in SF (4,354 unsheltered). For every person who exits homelessness, ~3 new people enter the system. The city spends ~$690M/year without resolving the imbalance.</span></div></td>
         <td><div class="cell-actions">
@@ -1007,8 +1009,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Structural/Systemic Issues</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-breaking_the_cycle__ho-19-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Structural/Systemic Issues</span></div></td>
                 <td><div class="cell-summary"><span>SF's homelessness crisis has structural causes: decades of restrictive zoning, the most expensive housing market in the country, systemic racial inequality, and a system built to manage — not end — homelessness.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(19)" style="border-color:#337EA9;color:#337EA9">View ↗</button>
@@ -1047,8 +1049,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Behavioral / Health System</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-breaking_the_cycle__ho-20-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Behavioral / Health System</span></div></td>
                 <td><div class="cell-summary"><span>A large share of SF's homeless population lives with untreated or inadequately treated mental illness. The city needs 152–225 new psychiatric beds; staff shortages reduced capacity 15–20% in 2023.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(20)" style="border-color:#337EA9;color:#337EA9">View ↗</button>
@@ -1081,7 +1083,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
           </table>
         </td>
       </tr>
-      <tr class="lvl1-row" id="dim-reducing_health_dispar">
+      <tr class="lvl1-row" onclick="toggleRows('dim-reducing_health_dispar-body')" style="cursor:pointer" id="dim-reducing_health_dispar">
         <td><div class="cell-name"><span class="dot1" style="background:#337EA9"></span><span class="t-bold">Reducing Health Disparities</span></div></td>
         <td><div class="cell-summary"><span>SF's 83-year life expectancy and near-universal insurance coverage mask some of the most severe racial health disparities in the country. Black, Latino, and Pacific Islander residents fare worse on virtually every metric.</span></div></td>
         <td><div class="cell-actions">
@@ -1097,8 +1099,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Social Determinants of Health</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-reducing_health_dispar-21-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Social Determinants of Health</span></div></td>
                 <td><div class="cell-summary"><span>SF's health disparities are driven less by individual behavior than by daily living conditions: poverty, residential segregation, unequal access to healthy food, and neighborhood environment.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(21)" style="border-color:#337EA9;color:#337EA9">View ↗</button>
@@ -1132,8 +1134,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Prenatal, Maternal &amp; Infant Health Disparities</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-reducing_health_dispar-22-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Prenatal, Maternal &amp; Infant Health Disparities</span></div></td>
                 <td><div class="cell-summary"><span>SF has the worst birth disparities by race of any city in California. Black mothers have preterm birth rates of 16% (2024) — the highest since the state began tracking in 2007. The gap is widening.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(22)" style="border-color:#337EA9;color:#337EA9">View ↗</button>
@@ -1167,8 +1169,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Chronic Disease Disparities</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-reducing_health_dispar-23-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Chronic Disease Disparities</span></div></td>
                 <td><div class="cell-summary"><span>Chronic diseases — diabetes, hypertension, cardiovascular disease — are SF's leading causes of death and affect Black and Latino residents at rates 3–7× higher than white residents.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(23)" style="border-color:#337EA9;color:#337EA9">View ↗</button>
@@ -1197,8 +1199,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Overdose Death Disparities</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-reducing_health_dispar-24-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Overdose Death Disparities</span></div></td>
                 <td><div class="cell-summary"><span>SF's overdose crisis falls disproportionately on Black residents — particularly older Black men with histories of homelessness and economic marginalization — with a mortality rate 5× the citywide rate.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(24)" style="border-color:#337EA9;color:#337EA9">View ↗</button>
@@ -1232,8 +1234,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Service Response: Cultural &amp; Linguistic Barriers</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-reducing_health_dispar-25-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Service Response: Cultural &amp; Linguistic Barriers</span></div></td>
                 <td><div class="cell-summary"><span>Even where health services exist, they fail to reach the highest-disparity communities. Language, cultural, and trust barriers result in delayed preventive care and worse treatment outcomes.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(25)" style="border-color:#337EA9;color:#337EA9">View ↗</button>
@@ -1288,7 +1290,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
         <th>Challenge Dimension</th><th>Summary</th><th>Actions</th>
       </tr></thead>
       <tbody>
-      <tr class="lvl1-row" id="dim-open_air_drug_markets">
+      <tr class="lvl1-row" onclick="toggleRows('dim-open_air_drug_markets-body')" style="cursor:pointer" id="dim-open_air_drug_markets">
         <td><div class="cell-name"><span class="dot1" style="background:#0F7B6C"></span><span class="t-bold">Open-Air Drug Markets &amp; Public Drug Use</span></div></td>
         <td><div class="cell-summary"><span>SF's open-air drug markets — concentrated in the Tenderloin and SoMa — represent the city's most visible public safety challenge. In 2025, 624 accidental overdose deaths were recorded, over 70% attributed to fentanyl.</span></div></td>
         <td><div class="cell-actions">
@@ -1304,8 +1306,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Organized Drug Supply &amp; Trafficking Networks</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-open_air_drug_markets-26-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Organized Drug Supply &amp; Trafficking Networks</span></div></td>
                 <td><div class="cell-summary"><span>Open-air markets exist because street-level drug dealing is highly profitable and the supply chain is sophisticated. The Sinaloa Cartel manufactures fentanyl; Honduran organizations control Tenderloin street sales.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(26)" style="border-color:#0F7B6C;color:#0F7B6C">View ↗</button>
@@ -1334,8 +1336,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Public Drug Use &amp; Addiction Crisis</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-open_air_drug_markets-27-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Public Drug Use &amp; Addiction Crisis</span></div></td>
                 <td><div class="cell-summary"><span>Public drug use persists because tens of thousands of people with severe substance use disorders lack timely access to treatment. 28% of homeless drug users wanted treatment but couldn't access it.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(27)" style="border-color:#0F7B6C;color:#0F7B6C">View ↗</button>
@@ -1369,8 +1371,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Enforcement &amp; Response Systems</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-open_air_drug_markets-28-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Enforcement &amp; Response Systems</span></div></td>
                 <td><div class="cell-summary"><span>Even coordinated enforcement like DMACC cannot permanently eliminate markets when SFPD is critically understaffed, treatment capacity is insufficient, and dealers return in days.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(28)" style="border-color:#0F7B6C;color:#0F7B6C">View ↗</button>
@@ -1404,8 +1406,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Community &amp; Economic Impact</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-open_air_drug_markets-29-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Community &amp; Economic Impact</span></div></td>
                 <td><div class="cell-summary"><span>The persistence of open-air drug markets creates tangible, measurable harms for people who live, work, and visit those neighborhoods: fear, exclusion from public spaces, business closures, and lost income.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(29)" style="border-color:#0F7B6C;color:#0F7B6C">View ↗</button>
@@ -1438,7 +1440,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
           </table>
         </td>
       </tr>
-      <tr class="lvl1-row" id="dim-retail_theft___fencing">
+      <tr class="lvl1-row" onclick="toggleRows('dim-retail_theft___fencing-body')" style="cursor:pointer" id="dim-retail_theft___fencing">
         <td><div class="cell-name"><span class="dot1" style="background:#0F7B6C"></span><span class="t-bold">Retail Theft &amp; Fencing of Stolen Goods</span></div></td>
         <td><div class="cell-summary"><span>SF's retail theft crisis spans from individual shoplifting to organized smash-and-grab operations. Since 2023, enforcement and legislative reform produced measurable improvements, but structural vulnerabilities persist.</span></div></td>
         <td><div class="cell-actions">
@@ -1454,8 +1456,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
               <th>Problem Area</th><th>Summary</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Organized Retail Crime (ORC) Networks</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-retail_theft___fencing-30-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Organized Retail Crime (ORC) Networks</span></div></td>
                 <td><div class="cell-summary"><span>Retail theft in SF is not primarily opportunistic shoplifting — it is driven by organized criminal networks that coordinate teams, use getaway vehicles, target specific stores repeatedly, and quickly convert theft to cash.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(30)" style="border-color:#0F7B6C;color:#0F7B6C">View ↗</button>
@@ -1484,8 +1486,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Fencing Networks &amp; the Stolen Goods Economy</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-retail_theft___fencing-31-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Fencing Networks &amp; the Stolen Goods Economy</span></div></td>
                 <td><div class="cell-summary"><span>Fencing is the economic engine of retail theft: without markets to convert stolen merchandise into cash, the incentive to steal drops dramatically. The fencing network makes theft a viable business.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(31)" style="border-color:#0F7B6C;color:#0F7B6C">View ↗</button>
@@ -1514,8 +1516,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
                   </table>
                 </td>
               </tr>
-              <tr class="lvl2-row">
-                <td><div class="cell-name indent1"><span class="dash2">–</span><span class="t-med">Economic &amp; Community Impact</span></div></td>
+              <tr class="lvl2-row" onclick="toggleRows('dim-retail_theft___fencing-32-issues')" style="cursor:pointer">
+                <td><div class="cell-name indent1"><span class="t-med">Economic &amp; Community Impact</span></div></td>
                 <td><div class="cell-summary"><span>Retail theft's most lasting harm is the economic devastation of SF's commercial districts: Union Square's vacancy rate reached a record 20.6% in Q1 2024 — more than double the national average.</span></div></td>
                 <td><div class="cell-actions">
                   <button class="btn-view sm" onclick="openPAModal(32)" style="border-color:#0F7B6C;color:#0F7B6C">View ↗</button>

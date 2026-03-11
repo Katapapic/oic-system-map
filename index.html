@@ -156,6 +156,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .modal-sec-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border);}
 .modal-sec-text{font-size:13px;color:var(--muted2);line-height:1.75;}
 .modal-sec-text.evidence{font-size:12px;font-style:italic;}
+.src-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.src-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;background:#EDF4FB;color:#337EA9;font-size:11.5px;font-weight:500;text-decoration:none;border:1px solid #C5DFF0;transition:background .15s;}
+.src-chip:hover{background:#C5DFF0;color:#1a5f80;}
+.src-plain{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;background:#F3F3F1;color:#888;font-size:11.5px;border:1px solid #E0E0DC;}
 .modal-list{list-style:none;padding:0;margin:0;}
 .modal-list li{padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted2);line-height:1.6;display:flex;gap:8px;align-items:baseline;}
 .modal-list li:last-child{border-bottom:none;}
@@ -1575,6 +1579,29 @@ let cur=null;
 
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function linkify(t){return escH(t).replace(/(https?:\/\/[^\s,)<\]&]+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:#337EA9;word-break:break-all;">$1</a>');}
+
+function fmtSources(raw){
+  if(!raw) return '';
+  // Split by newline, filter empty lines
+  const lines = raw.split(/\n/).map(l=>l.trim()).filter(l=>l.length>0);
+  const items = lines.map(line=>{
+    // Extract URL if present
+    const urlMatch = line.match(/(https?:\/\/[^\s,)<\]]+)/);
+    if(urlMatch){
+      const url = urlMatch[1];
+      // Label = everything before the URL, or the URL domain if nothing
+      let label = line.replace(url,'').replace(/^[\s:•–—-]+|[\s:•–—-]+$/g,'').trim();
+      if(!label){
+        try{ label = new URL(url).hostname.replace('www.',''); } catch(e){ label = url; }
+      }
+      return `<a href="${escH(url)}" target="_blank" rel="noopener" class="src-chip">${escH(label)}</a>`;
+    } else {
+      // Plain text source — no URL available
+      return `<span class="src-plain">${escH(line)}</span>`;
+    }
+  });
+  return `<div class="src-list">${items.join('')}</div>`;
+}
 function col(ch){return CH_COLORS[CH_IDS[ch]||'c1'];}
 
 function fmtWhatDone(text){
@@ -1616,7 +1643,7 @@ function openIssueModal(idx){
   if(i.i_desc) h+=`<div class="modal-section"><div class="modal-sec-label">Issue description</div><div class="modal-sec-text">${linkify(i.i_desc)}</div></div>`;
   if(i.why) h+=`<div class="modal-section"><div class="modal-sec-label">Why is this a problem?</div><div class="modal-sec-text">${linkify(i.why)}</div></div>`;
   if(i.evid) h+=`<div class="modal-section"><div class="modal-sec-label">Evidence &amp; data</div><div class="modal-sec-text evidence">${linkify(i.evid)}</div></div>`;
-  if(i.src) h+=`<div class="modal-section"><div class="modal-sec-label">Sources</div><div class="modal-sec-text" style="font-size:12px">${linkify(i.src)}</div></div>`;
+  if(i.src) h+=`<div class="modal-section"><div class="modal-sec-label">Sources</div>${fmtSources(i.src)}</div>`;
   h+=footer(idx,ISSUES.length);
   show(h);
 }

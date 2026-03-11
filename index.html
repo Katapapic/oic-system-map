@@ -102,7 +102,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 
 /* TEXT */
 .t-bold{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.4;}
-.t-med{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;}
+.t-med{font-size:12px;font-weight:700;color:#333;line-height:1.4;letter-spacing:0.01em;}
 .t-issue{font-size:11.5px;font-weight:500;color:var(--text);line-height:1.4;}
 /* Summary: show full text, no clipping */
 .cell-summary span,
@@ -122,13 +122,20 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .lvl1-row:hover > td > .cell-name,
 .lvl1-row:hover > td > .cell-summary,
 .lvl1-row:hover > td > .cell-actions{background:#FAFAFA;}
-.lvl2-row > td{background:#F9F9F7;}
-.lvl2-row:hover > td{background:#F2F2F0;}
+/* ── Problem Area (lvl2) — styled as sub-header ── */
+.lvl2-row > td{background:#EFEFED;border-top:1px solid var(--border);}
+.lvl2-row > td .cell-name{padding-top:8px;padding-bottom:8px;}
+.lvl2-row > td .cell-summary{padding-top:8px;padding-bottom:8px;}
+.lvl2-row > td .cell-actions{padding-top:6px;padding-bottom:6px;}
+.lvl2-row:hover > td{background:#E6E5E2;}
 .lvl1-row{cursor:pointer;}
 .lvl2-row{cursor:pointer;}
-.lvl3-row > td{background:#F5F5F3;cursor:pointer;}
+/* ── Issue (lvl3) — data rows, clearly subordinate ── */
+.lvl3-row > td{background:#FAFAF9;cursor:pointer;}
 .lvl3-row:hover > td{background:#EEF5FF;}
 .lvl3-row:hover .t-issue{color:#337EA9;text-decoration:underline;}
+/* Issue label pill on thead sub2 */
+.thead-row.sub2 th{background:#F0F0EE;font-size:10px;font-weight:600;letter-spacing:.06em;color:#888;padding:5px 12px;border-bottom:1px solid var(--border);}
 
 /* nested td wrapper */
 .nested-td{padding:0!important;border:none!important;}
@@ -245,6 +252,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <span class="ch-name" style="color:#D44C47">Maintain Clean, Safe &amp; Welcoming Spaces</span>
     <div class="ch-stats">
       <span class="ch-stat-tag" style="background:#FDECEA;color:#D44C47">5 dimensions</span>
+      <span class="ch-stat-tag" style="background:#FDECEA;color:#D44C47">19 problem areas</span>
       <span class="ch-stat-tag" style="background:#FDECEA;color:#D44C47">47 issues</span>
     </div>
     <span class="ch-toggle open" id="ch-c1-toggle">▶</span>
@@ -982,6 +990,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <span class="ch-name" style="color:#337EA9">Transform Our Health and Homelessness System</span>
     <div class="ch-stats">
       <span class="ch-stat-tag" style="background:#E7F3F8;color:#337EA9">2 dimensions</span>
+      <span class="ch-stat-tag" style="background:#E7F3F8;color:#337EA9">7 problem areas</span>
       <span class="ch-stat-tag" style="background:#E7F3F8;color:#337EA9">19 issues</span>
     </div>
     <span class="ch-toggle open" id="ch-c2-toggle">▶</span>
@@ -1279,6 +1288,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <span class="ch-name" style="color:#0F7B6C">Keep Our City Safe</span>
     <div class="ch-stats">
       <span class="ch-stat-tag" style="background:#EEF8F6;color:#0F7B6C">2 dimensions</span>
+      <span class="ch-stat-tag" style="background:#EEF8F6;color:#0F7B6C">7 problem areas</span>
       <span class="ch-stat-tag" style="background:#EEF8F6;color:#0F7B6C">17 issues</span>
     </div>
     <span class="ch-toggle open" id="ch-c3-toggle">▶</span>
